@@ -461,3 +461,64 @@
   }
 }
 
+
+/* Module 03 — Interactive waveform */
+
+.seekableWaveform {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  border: none;
+  font: inherit;
+  cursor: crosshair;
+}
+
+.seekableWaveform:disabled {
+  cursor: default;
+}
+
+.seekableWaveform:focus-visible {
+  outline: 2px solid #e6b0c5;
+  outline-offset: 4px;
+}
+
+.seekableWaveform span {
+  transition: opacity 120ms ease;
+}
+
+.waveformPlayhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #f7e8ec;
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.waveformPlayback {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.waveformPlayback audio {
+  display: block;
+  width: 100%;
+}
+
+.waveformTime {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #c6b7c4;
+  font-variant-numeric: tabular-nums;
+}
+
+.waveformError {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #e6b0c5;
+}

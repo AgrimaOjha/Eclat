@@ -1,9 +1,12 @@
 
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import AudioWaveform from "./AudioWaveform";
+import { useState } from "react";
+import type { ChangeEvent } from "react";
 import styles from "./page.module.css";
-<main className={styles.page}></main>
+
+// Types for audio analysis results
 type Fingerprint = {
   duration_seconds: number;
   sample_rate: number;
@@ -42,7 +45,11 @@ type ComparisonResponse = {
 const MAX_BYTES = 10 * 1024 * 1024;
 
 const metrics = [
-  { key: "rms_energy", label: "RMS energy", unit: "" },
+  {
+    key: "rms_energy",
+    label: "RMS energy",
+    unit: "",
+  },
   {
     key: "spectral_centroid_hz",
     label: "Spectral centroid",
@@ -55,6 +62,7 @@ const metrics = [
   },
 ] as const;
 
+// Individual audio upload card
 function AudioSlot({
   label,
   number,
@@ -66,26 +74,6 @@ function AudioSlot({
   file: File | null;
   onFile: (file: File | null) => void;
 }) {
-  
-const [preview, setPreview] = useState<string | null>(null);
-
-useEffect(() => {
-  if (!file) {
-    return;
-  }
-
-  const url = URL.createObjectURL(file);
-
-  queueMicrotask(() => {
-    setPreview(url);
-  });
-
-  return () => {
-    URL.revokeObjectURL(url);
-  };
-}, [file]);
-
-
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     onFile(event.target.files?.[0] ?? null);
   }
@@ -93,30 +81,27 @@ useEffect(() => {
   return (
     <div className={styles.audioSlot}>
       <div className={styles.slotTop}>
-        <span className={styles.slotNumber}>{number}</span>
-        <span className={styles.slotLabel}>{label}</span>
+        <span className={styles.slotNumber}>
+          {number}
+        </span>
+
+        <span className={styles.slotLabel}>
+          {label}
+        </span>
       </div>
 
-      <div className={styles.waveArt} aria-hidden="true">
-        {Array.from({ length: 45 }, (_, i) => {
-          // Use integer heights to avoid server/client style rounding differences.
-          const height = Math.round(
-            12 + Math.abs(Math.sin(i * 0.57) * Math.cos(i * 0.13)) * 65
-          );
-
-          return (
-            <span
-              key={i}
-              style={{ height: `${height}%` }}
-            />
-          );
-        })}
-      </div>
+      {/* Interactive waveform and audio playback */}
+      <AudioWaveform file={file} />
 
       {file ? (
         <div className={styles.selectedFile}>
-          <strong title={file.name}>{file.name}</strong>
-          <span>{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+          <strong title={file.name}>
+            {file.name}
+          </strong>
+
+          <span>
+            {(file.size / 1024 / 1024).toFixed(2)} MB
+          </span>
         </div>
       ) : (
         <p className={styles.emptyText}>
@@ -124,8 +109,12 @@ useEffect(() => {
         </p>
       )}
 
+      {/* Upload or replace audio */}
       <label className={styles.fileButton}>
-        {file ? "Replace recording" : "Choose WAV recording"}
+        {file
+          ? "Replace recording"
+          : "Choose WAV recording"}
+
         <input
           type="file"
           accept=".wav,audio/wav"
@@ -133,61 +122,72 @@ useEffect(() => {
           aria-label={`Choose ${label}`}
         />
       </label>
-
-      {file && preview && (
-        <audio
-          key={preview}
-          controls
-          preload="metadata"
-          src={preview}
-          className={styles.audioPlayer}
-        />
-      )}
     </div>
   );
 }
 
+// Main application
 export default function Home() {
   const [fileA, setFileA] = useState<File | null>(null);
   const [fileB, setFileB] = useState<File | null>(null);
 
-  const [result, setResult] = useState<ComparisonResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] =
+    useState<ComparisonResponse | null>(null);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
 
-  const canAnalyze = Boolean(fileA && fileB && !loading);
+  const canAnalyze = Boolean(
+    fileA && fileB && !loading
+  );
 
+  // Update Track A
   function changeA(file: File | null) {
     setFileA(file);
     setResult(null);
     setError(null);
   }
 
+  // Update Track B
   function changeB(file: File | null) {
     setFileB(file);
     setResult(null);
     setError(null);
   }
 
+  // Send audio files to comparison API
   async function analyze() {
-    if (!fileA || !fileB || loading) return;
+    if (!fileA || !fileB || loading) {
+      return;
+    }
 
     setError(null);
     setResult(null);
 
+    // Validate uploaded files
     for (const file of [fileA, fileB]) {
       if (!file.name.toLowerCase().endsWith(".wav")) {
-        setError("Please choose WAV recordings only.");
+        setError(
+          "Please choose WAV recordings only."
+        );
         return;
       }
 
-      if (file.size === 0 || file.size > MAX_BYTES) {
-        setError("Each recording must be between 1 byte and 10 MiB.");
+      if (
+        file.size === 0 ||
+        file.size > MAX_BYTES
+      ) {
+        setError(
+          "Each recording must be between 1 byte and 10 MiB."
+        );
         return;
       }
     }
 
     const form = new FormData();
+
     form.append("file_a", fileA);
     form.append("file_b", fileB);
 
@@ -224,17 +224,26 @@ export default function Home() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.ambient} aria-hidden="true" />
+      {/* Ambient background */}
+      <div
+        className={styles.ambient}
+        aria-hidden="true"
+      />
 
       <div className={styles.container}>
+        {/* Header */}
         <header className={styles.header}>
-          <div className={styles.brand}>ÉCLAT<span>.</span></div>
+          <div className={styles.brand}>
+            ÉCLAT<span>.</span>
+          </div>
+
           <div className={styles.headerRight}>
             <span className={styles.statusDot} />
-            ACOUSTIC LAB / V0.2
+            ACOUSTIC LAB / V0.3
           </div>
         </header>
 
+        {/* Hero section */}
         <section className={styles.hero}>
           <p className={styles.eyebrow}>
             THE ART & SCIENCE OF LISTENING
@@ -253,12 +262,19 @@ export default function Home() {
           </p>
         </section>
 
+        {/* Audio comparison workspace */}
         <section className={styles.workspace}>
           <div className={styles.sectionHeading}>
-            <span>01 / THE EXPERIMENT</span>
-            <span>WAV ONLY · MAX 30 SEC</span>
+            <span>
+              01 / THE EXPERIMENT
+            </span>
+
+            <span>
+              WAV ONLY · MAX 30 SEC
+            </span>
           </div>
 
+          {/* Two audio upload cards */}
           <div className={styles.uploadGrid}>
             <AudioSlot
               number="A"
@@ -275,15 +291,21 @@ export default function Home() {
             />
           </div>
 
+          {/* Compare button */}
           <button
             className={styles.analyzeButton}
             onClick={analyze}
             disabled={!canAnalyze}
           >
             {loading ? (
-              <>Analyzing your recordings…</>
+              <>
+                Analyzing your recordings…
+              </>
             ) : (
-              <>Reveal the differences <span>↗</span></>
+              <>
+                Reveal the differences
+                <span>↗</span>
+              </>
             )}
           </button>
 
@@ -292,59 +314,101 @@ export default function Home() {
             No audio is deliberately saved by our application.
           </p>
 
+          {/* Loading indicator */}
           {loading && (
-            <div className={styles.loading} role="status">
+            <div
+              className={styles.loading}
+              role="status"
+            >
               <span className={styles.spinner} />
-              Extracting acoustic fingerprints and comparing features…
+
+              Extracting acoustic fingerprints
+              and comparing features…
             </div>
           )}
 
+          {/* Error message */}
           {error && (
-            <div className={styles.error} role="alert">
-              <strong>Analysis interrupted.</strong>
+            <div
+              className={styles.error}
+              role="alert"
+            >
+              <strong>
+                Analysis interrupted.
+              </strong>
+
               <p>{error}</p>
             </div>
           )}
         </section>
 
+        {/* Comparison results */}
         {result && (
-          <section className={styles.results} aria-live="polite">
+          <section
+            className={styles.results}
+            aria-live="polite"
+          >
             <div className={styles.sectionHeading}>
-              <span>02 / YOUR ACOUSTIC REPORT</span>
-              <span>ANALYSIS COMPLETE</span>
+              <span>
+                02 / YOUR ACOUSTIC REPORT
+              </span>
+
+              <span>
+                ANALYSIS COMPLETE
+              </span>
             </div>
 
-            <h2>The sound, decoded.</h2>
+            <h2>
+              The sound, decoded.
+            </h2>
+
             <p className={styles.resultIntro}>
-              Every value below comes from the Python
-              acoustic comparison engine.
+              Every value below comes from
+              the Python acoustic comparison engine.
             </p>
 
+            {/* Track summaries */}
             <div className={styles.summaryGrid}>
               <div>
                 <span>TRACK A</span>
-                <strong>{result.filenames.track_a}</strong>
+
+                <strong>
+                  {result.filenames.track_a}
+                </strong>
+
                 <small>
-                  {result.result.track_a.duration_seconds.toFixed(2)}s
+                  {result.result.track_a.duration_seconds.toFixed(2)}
+                  s
                   {" · "}
-                  {result.result.track_a.sample_rate.toLocaleString()} Hz
+                  {result.result.track_a.sample_rate.toLocaleString()}
+                  {" Hz"}
                 </small>
               </div>
+
               <div>
                 <span>TRACK B</span>
-                <strong>{result.filenames.track_b}</strong>
+
+                <strong>
+                  {result.filenames.track_b}
+                </strong>
+
                 <small>
-                  {result.result.track_b.duration_seconds.toFixed(2)}s
+                  {result.result.track_b.duration_seconds.toFixed(2)}
+                  s
                   {" · "}
-                  {result.result.track_b.sample_rate.toLocaleString()} Hz
+                  {result.result.track_b.sample_rate.toLocaleString()}
+                  {" Hz"}
                 </small>
               </div>
             </div>
 
+            {/* Acoustic feature comparisons */}
             <div className={styles.metricList}>
               {metrics.map((metric) => {
                 const value =
-                  result.result.comparison.features[metric.key];
+                  result.result.comparison.features[
+                    metric.key
+                  ];
 
                 const max = Math.max(
                   value.track_a,
@@ -353,42 +417,68 @@ export default function Home() {
                 );
 
                 return (
-                  <div className={styles.metric} key={metric.key}>
-                    <div className={styles.metricHeader}>
-                      <h3>{metric.label}</h3>
+                  <div
+                    className={styles.metric}
+                    key={metric.key}
+                  >
+                    <div
+                      className={styles.metricHeader}
+                    >
+                      <h3>
+                        {metric.label}
+                      </h3>
+
                       <span>
                         Normalized difference:{" "}
                         {value.normalized_difference.toFixed(3)}
                       </span>
                     </div>
 
+                    {/* Track A feature bar */}
                     <div className={styles.barRow}>
                       <span>A</span>
-                      <div className={styles.barTrack}>
+
+                      <div
+                        className={styles.barTrack}
+                      >
                         <div
                           className={styles.barA}
                           style={{
-                            width: `${(value.track_a / max) * 100}%`,
+                            width: `${
+                              (value.track_a / max) * 100
+                            }%`,
                           }}
                         />
                       </div>
+
                       <strong>
-                        {value.track_a.toFixed(4)} {metric.unit}
+                        {value.track_a.toFixed(4)}
+                        {" "}
+                        {metric.unit}
                       </strong>
                     </div>
 
+                    {/* Track B feature bar */}
                     <div className={styles.barRow}>
                       <span>B</span>
-                      <div className={styles.barTrack}>
+
+                      <div
+                        className={styles.barTrack}
+                      >
                         <div
                           className={styles.barB}
                           style={{
-                            width: `${(value.track_b / max) * 100}%`,
+                            width: `${
+                              (value.track_b / max) * 100
+                            }%`,
                           }}
                         />
                       </div>
+
                       <strong>
-                        {value.track_b.toFixed(4)} {metric.unit}
+                        {value.track_b.toFixed(4)}
+                        {" "}
+                        {metric.unit}
                       </strong>
                     </div>
                   </div>
@@ -396,42 +486,65 @@ export default function Home() {
               })}
             </div>
 
+            {/* Additional comparison metrics */}
             <div className={styles.extraMetrics}>
               <div>
-                <span>RMS level difference</span>
+                <span>
+                  RMS level difference
+                </span>
+
                 <strong>
-                  {result.result.comparison.additional_metrics
-                    .rms_difference_db?.toFixed(3) ?? "Undefined"}
-                  {result.result.comparison.additional_metrics
-                    .rms_difference_db !== null && " dB"}
+                  {result.result.comparison
+                    .additional_metrics
+                    .rms_difference_db?.toFixed(3) ??
+                    "Undefined"}
+
+                  {result.result.comparison
+                    .additional_metrics
+                    .rms_difference_db !== null &&
+                    " dB"}
                 </strong>
               </div>
 
               <div>
-                <span>Spectral centroid ratio</span>
+                <span>
+                  Spectral centroid ratio
+                </span>
+
                 <strong>
-                  {result.result.comparison.additional_metrics
+                  {result.result.comparison
+                    .additional_metrics
                     .centroid_difference_octaves?.toFixed(3) ??
                     "Undefined"}
-                  {result.result.comparison.additional_metrics
+
+                  {result.result.comparison
+                    .additional_metrics
                     .centroid_difference_octaves !== null &&
                     " octaves"}
                 </strong>
               </div>
             </div>
 
+            {/* Interpretation disclaimer */}
             <p className={styles.disclaimer}>
-              These are acoustic measurements, not emotional
-              similarity scores. Normalized difference ranges
-              from 0 (equal values) to 1 (maximum pair-relative
-              difference).
+              These are acoustic measurements,
+              not emotional similarity scores.
+              Normalized difference ranges from
+              0 (equal values) to 1
+              (maximum pair-relative difference).
             </p>
           </section>
         )}
 
+        {/* Footer */}
         <footer className={styles.footer}>
-          <span>ÉCLAT — SOUND INTELLIGENCE</span>
-          <span>POWERED BY THE SYNAPSE VISION</span>
+          <span>
+            ÉCLAT — SOUND INTELLIGENCE
+          </span>
+
+          <span>
+            POWERED BY THE SYNAPSE VISION
+          </span>
         </footer>
       </div>
     </main>
