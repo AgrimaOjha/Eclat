@@ -1,0 +1,29 @@
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Generated test audio
+services/api/tests/generated/
+
+# Datasets and model artifacts
+data/raw/
+data/processed/
+artifacts/
+checkpoints/
+
+# macOS
+.DS_Store
