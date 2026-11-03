@@ -522,3 +522,95 @@
   font-size: 12px;
   color: #e6b0c5;
 }
+
+/* Module 03 — Frequency spectrum */
+
+.spectrumCard {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(231, 194, 211, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.spectrumHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #c8b7c4;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.spectrumBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2px;
+  height: 115px;
+  overflow: hidden;
+}
+
+.spectrumBars > span {
+  flex: 1;
+  min-width: 1px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(
+    to top,
+    #916478,
+    #e5adc4
+  );
+  transition: height 220ms ease;
+}
+
+.spectrumAxis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #b5a6b3;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.spectrumPeak {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(231, 194, 211, 0.12);
+}
+
+.spectrumPeak span {
+  color: #c8b7c4;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.spectrumPeak strong {
+  color: #efbdd0;
+  font-size: 18px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.spectrumNote {
+  margin-top: 14px;
+  color: #9f929f;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.spectrumError {
+  margin-top: 12px;
+  color: #efbdd0;
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spectrumBars > span {
+    transition: none;
+  }
+}

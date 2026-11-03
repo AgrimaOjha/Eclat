@@ -5,7 +5,7 @@ import AudioWaveform from "./AudioWaveform";
 import { useState } from "react";
 import type { ChangeEvent } from "react";
 import styles from "./page.module.css";
-
+import FrequencySpectrum from "./FrequencySpectrum";
 // Types for audio analysis results
 type Fingerprint = {
   duration_seconds: number;
@@ -91,7 +91,11 @@ function AudioSlot({
       </div>
 
       {/* Interactive waveform and audio playback */}
+      
       <AudioWaveform file={file} />
+
+      
+
 
       {file ? (
         <div className={styles.selectedFile}>
@@ -122,6 +126,7 @@ function AudioSlot({
           aria-label={`Choose ${label}`}
         />
       </label>
+      {file && <FrequencySpectrum file={file} />}
     </div>
   );
 }
