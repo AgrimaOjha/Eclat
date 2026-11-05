@@ -2,10 +2,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { calculateSpectrum } from "./FrequencySpectrum";
+import { getSpectrum } from "./FrequencySpectrum";
 import styles from "./page.module.css";
 
-type Spectrum = ReturnType<typeof calculateSpectrum>;
+type Spectrum = Awaited<ReturnType<typeof getSpectrum>>;
 
 type ComparisonData = {
   fileA: File;
@@ -44,57 +44,45 @@ export default function SpectrumComparison({
   const [error, setError] =
     useState<AnalysisError | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  
+useEffect(() => {
+  let cancelled = false;
 
-    async function analyzeBoth() {
-      const contexts: AudioContext[] = [];
+  async function analyzeBoth() {
+    try {
+      // Both components now share cached FFT results.
+      const [trackA, trackB] = await Promise.all([
+        getSpectrum(fileA),
+        getSpectrum(fileB),
+      ]);
 
-      async function analyzeFile(file: File) {
-        const context = new AudioContext();
-        contexts.push(context);
+      if (!cancelled) {
+        setData({
+          fileA,
+          fileB,
+          trackA,
+          trackB,
+        });
 
-        const bytes = await file.arrayBuffer();
-        const decoded =
-          await context.decodeAudioData(bytes);
-
-        return calculateSpectrum(decoded);
+        setError(null);
       }
-
-      try {
-        const [trackA, trackB] = await Promise.all([
-          analyzeFile(fileA),
-          analyzeFile(fileB),
-        ]);
-
-        if (!cancelled) {
-          setData({
-            fileA,
-            fileB,
-            trackA,
-            trackB,
-          });
-          setError(null);
-        }
-      } catch {
-        if (!cancelled) {
-          setError({ fileA, fileB });
-        }
-      } finally {
-        await Promise.all(
-          contexts.map((context) =>
-            context.close().catch(() => {})
-          )
-        );
+    } catch {
+      if (!cancelled) {
+        setError({
+          fileA,
+          fileB,
+        });
       }
     }
+  }
 
-    void analyzeBoth();
+  void analyzeBoth();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [fileA, fileB]);
+  return () => {
+    cancelled = true;
+  };
+}, [fileA, fileB]);
+
 
   const currentData =
     data?.fileA === fileA &&
@@ -286,7 +274,7 @@ export default function SpectrumComparison({
             <div>
               <span>ABSOLUTE PEAK DIFFERENCE</span>
               <strong>
-                {peakComparison!.differenceHz.toFixed(1)} Hz
+                {peakComparison?.differenceHz.toFixed(1) ?? "—"} Hz
               </strong>
             </div>
 

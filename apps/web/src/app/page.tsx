@@ -1,12 +1,17 @@
 
 "use client";
 
-import AudioWaveform from "./AudioWaveform";
 import { useState } from "react";
 import type { ChangeEvent } from "react";
-import styles from "./page.module.css";
+
+import AudioWaveform from "./AudioWaveform";
 import FrequencySpectrum from "./FrequencySpectrum";
-// Types for audio analysis results
+import SpectrumComparison from "./SpectrumComparison";
+
+import styles from "./page.module.css";
+
+// ==================== TYPES ====================
+
 type Fingerprint = {
   duration_seconds: number;
   sample_rate: number;
@@ -42,9 +47,20 @@ type ComparisonResponse = {
   };
 };
 
+type MetricKey =
+  | "rms_energy"
+  | "spectral_centroid_hz"
+  | "zero_crossing_rate";
+
+// ==================== CONSTANTS ====================
+
 const MAX_BYTES = 10 * 1024 * 1024;
 
-const metrics = [
+const metrics: {
+  key: MetricKey;
+  label: string;
+  unit: string;
+}[] = [
   {
     key: "rms_energy",
     label: "RMS energy",
@@ -60,9 +76,10 @@ const metrics = [
     label: "Zero-crossing rate",
     unit: "",
   },
-] as const;
+];
 
-// Individual audio upload card
+// ==================== AUDIO SLOT ====================
+
 function AudioSlot({
   label,
   number,
@@ -74,8 +91,13 @@ function AudioSlot({
   file: File | null;
   onFile: (file: File | null) => void;
 }) {
-  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+  function handleChange(
+    event: ChangeEvent<HTMLInputElement>
+  ) {
     onFile(event.target.files?.[0] ?? null);
+
+    // Allows the same file to be selected again.
+    event.target.value = "";
   }
 
   return (
@@ -90,13 +112,10 @@ function AudioSlot({
         </span>
       </div>
 
-      {/* Interactive waveform and audio playback */}
-      
+      {/* REAL WAVEFORM + INTERACTIVE PLAYBACK */}
       <AudioWaveform file={file} />
 
-      
-
-
+      {/* SELECTED FILE INFORMATION */}
       {file ? (
         <div className={styles.selectedFile}>
           <strong title={file.name}>
@@ -113,7 +132,7 @@ function AudioSlot({
         </p>
       )}
 
-      {/* Upload or replace audio */}
+      {/* UPLOAD / REPLACE BUTTON */}
       <label className={styles.fileButton}>
         {file
           ? "Replace recording"
@@ -126,15 +145,23 @@ function AudioSlot({
           aria-label={`Choose ${label}`}
         />
       </label>
-      {file && <FrequencySpectrum file={file} />}
+
+      {/* INDIVIDUAL FREQUENCY SPECTRUM */}
+      {file && (
+        <FrequencySpectrum file={file} />
+      )}
     </div>
   );
 }
 
-// Main application
+// ==================== MAIN HOME PAGE ====================
+
 export default function Home() {
-  const [fileA, setFileA] = useState<File | null>(null);
-  const [fileB, setFileB] = useState<File | null>(null);
+  const [fileA, setFileA] =
+    useState<File | null>(null);
+
+  const [fileB, setFileB] =
+    useState<File | null>(null);
 
   const [result, setResult] =
     useState<ComparisonResponse | null>(null);
@@ -142,27 +169,29 @@ export default function Home() {
   const [error, setError] =
     useState<string | null>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
   const canAnalyze = Boolean(
     fileA && fileB && !loading
   );
 
-  // Update Track A
+  // ==================== FILE UPDATES ====================
+
   function changeA(file: File | null) {
     setFileA(file);
     setResult(null);
     setError(null);
   }
 
-  // Update Track B
   function changeB(file: File | null) {
     setFileB(file);
     setResult(null);
     setError(null);
   }
 
-  // Send audio files to comparison API
+  // ==================== API COMPARISON ====================
+
   async function analyze() {
     if (!fileA || !fileB || loading) {
       return;
@@ -171,7 +200,7 @@ export default function Home() {
     setError(null);
     setResult(null);
 
-    // Validate uploaded files
+    // Validate both uploaded WAV files.
     for (const file of [fileA, fileB]) {
       if (!file.name.toLowerCase().endsWith(".wav")) {
         setError(
@@ -227,16 +256,18 @@ export default function Home() {
     }
   }
 
+  // ==================== PAGE UI ====================
+
   return (
     <main className={styles.page}>
-      {/* Ambient background */}
+      {/* AMBIENT BACKGROUND */}
       <div
         className={styles.ambient}
         aria-hidden="true"
       />
 
       <div className={styles.container}>
-        {/* Header */}
+        {/* HEADER */}
         <header className={styles.header}>
           <div className={styles.brand}>
             ÉCLAT<span>.</span>
@@ -244,11 +275,11 @@ export default function Home() {
 
           <div className={styles.headerRight}>
             <span className={styles.statusDot} />
-            ACOUSTIC LAB / V0.3
+            ACOUSTIC LAB / V0.4
           </div>
         </header>
 
-        {/* Hero section */}
+        {/* HERO */}
         <section className={styles.hero}>
           <p className={styles.eyebrow}>
             THE ART & SCIENCE OF LISTENING
@@ -267,7 +298,7 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Audio comparison workspace */}
+        {/* EXPERIMENT WORKSPACE */}
         <section className={styles.workspace}>
           <div className={styles.sectionHeading}>
             <span>
@@ -279,7 +310,7 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Two audio upload cards */}
+          {/* AUDIO UPLOAD CARDS */}
           <div className={styles.uploadGrid}>
             <AudioSlot
               number="A"
@@ -296,16 +327,15 @@ export default function Home() {
             />
           </div>
 
-          {/* Compare button */}
+          {/* ANALYZE BUTTON */}
           <button
+            type="button"
             className={styles.analyzeButton}
             onClick={analyze}
             disabled={!canAnalyze}
           >
             {loading ? (
-              <>
-                Analyzing your recordings…
-              </>
+              <>Analyzing your recordings…</>
             ) : (
               <>
                 Reveal the differences
@@ -319,20 +349,19 @@ export default function Home() {
             No audio is deliberately saved by our application.
           </p>
 
-          {/* Loading indicator */}
+          {/* LOADING */}
           {loading && (
             <div
               className={styles.loading}
               role="status"
             >
               <span className={styles.spinner} />
-
               Extracting acoustic fingerprints
               and comparing features…
             </div>
           )}
 
-          {/* Error message */}
+          {/* ERROR */}
           {error && (
             <div
               className={styles.error}
@@ -347,7 +376,8 @@ export default function Home() {
           )}
         </section>
 
-        {/* Comparison results */}
+        {/* ==================== RESULTS ==================== */}
+
         {result && (
           <section
             className={styles.results}
@@ -372,7 +402,7 @@ export default function Home() {
               the Python acoustic comparison engine.
             </p>
 
-            {/* Track summaries */}
+            {/* TRACK SUMMARY */}
             <div className={styles.summaryGrid}>
               <div>
                 <span>TRACK A</span>
@@ -407,7 +437,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Acoustic feature comparisons */}
+            {/* ACOUSTIC METRIC COMPARISONS */}
             <div className={styles.metricList}>
               {metrics.map((metric) => {
                 const value =
@@ -426,9 +456,7 @@ export default function Home() {
                     className={styles.metric}
                     key={metric.key}
                   >
-                    <div
-                      className={styles.metricHeader}
-                    >
+                    <div className={styles.metricHeader}>
                       <h3>
                         {metric.label}
                       </h3>
@@ -439,13 +467,11 @@ export default function Home() {
                       </span>
                     </div>
 
-                    {/* Track A feature bar */}
+                    {/* TRACK A BAR */}
                     <div className={styles.barRow}>
                       <span>A</span>
 
-                      <div
-                        className={styles.barTrack}
-                      >
+                      <div className={styles.barTrack}>
                         <div
                           className={styles.barA}
                           style={{
@@ -463,13 +489,11 @@ export default function Home() {
                       </strong>
                     </div>
 
-                    {/* Track B feature bar */}
+                    {/* TRACK B BAR */}
                     <div className={styles.barRow}>
                       <span>B</span>
 
-                      <div
-                        className={styles.barTrack}
-                      >
+                      <div className={styles.barTrack}>
                         <div
                           className={styles.barB}
                           style={{
@@ -491,7 +515,7 @@ export default function Home() {
               })}
             </div>
 
-            {/* Additional comparison metrics */}
+            {/* ADDITIONAL METRICS */}
             <div className={styles.extraMetrics}>
               <div>
                 <span>
@@ -530,18 +554,28 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Interpretation disclaimer */}
+            {/* ==================== MODULE 04 ==================== */}
+
+            {/* SHARED FREQUENCY COMPARISON */}
+            {fileA && fileB && (
+              <SpectrumComparison
+                fileA={fileA}
+                fileB={fileB}
+              />
+            )}
+
+            {/* INTERPRETATION DISCLAIMER */}
             <p className={styles.disclaimer}>
               These are acoustic measurements,
               not emotional similarity scores.
-              Normalized difference ranges from
-              0 (equal values) to 1
+              Normalized difference ranges
+              from 0 (equal values) to 1
               (maximum pair-relative difference).
             </p>
           </section>
         )}
 
-        {/* Footer */}
+        {/* FOOTER */}
         <footer className={styles.footer}>
           <span>
             ÉCLAT — SOUND INTELLIGENCE

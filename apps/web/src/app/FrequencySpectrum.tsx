@@ -4,15 +4,26 @@
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 
+// =====================================
+// CONFIGURATION
+// =====================================
+
 const FFT_SIZE = 8192;
 const BAR_COUNT = 56;
 const MIN_HZ = 60;
 const MAX_HZ = 8000;
 
-type SpectrumResult = {
-  file: File;
+// =====================================
+// TYPES
+// =====================================
+
+type SpectrumValues = {
   bars: number[];
   peakHz: number;
+};
+
+type SpectrumResult = SpectrumValues & {
+  file: File;
 };
 
 type SpectrumError = {
@@ -20,14 +31,21 @@ type SpectrumError = {
   message: string;
 };
 
-// Fast Fourier Transform (radix-2 Cooley-Tukey)
+// =====================================
+// FAST FOURIER TRANSFORM
+// =====================================
+
+// Radix-2 Cooley-Tukey FFT.
+// Converts time-domain samples into
+// frequency-domain coefficients.
+
 function fft(
   real: Float64Array,
   imag: Float64Array
 ): void {
   const n = real.length;
 
-  // Rearrange samples into bit-reversed order.
+  // Bit-reversal permutation.
   let j = 0;
 
   for (let i = 1; i < n; i++) {
@@ -41,31 +59,48 @@ function fft(
     j ^= bit;
 
     if (i < j) {
-      [real[i], real[j]] = [real[j], real[i]];
-      [imag[i], imag[j]] = [imag[j], imag[i]];
+      [real[i], real[j]] = [
+        real[j],
+        real[i],
+      ];
+
+      [imag[i], imag[j]] = [
+        imag[j],
+        imag[i],
+      ];
     }
   }
 
-  // Combine progressively larger FFT blocks.
+  // Iterative butterfly stages.
   for (let len = 2; len <= n; len *= 2) {
     const angle = (-2 * Math.PI) / len;
 
     const stepReal = Math.cos(angle);
     const stepImag = Math.sin(angle);
 
-    for (let start = 0; start < n; start += len) {
+    for (
+      let start = 0;
+      start < n;
+      start += len
+    ) {
       let wr = 1;
       let wi = 0;
 
-      for (let k = 0; k < len / 2; k++) {
+      for (
+        let k = 0;
+        k < len / 2;
+        k++
+      ) {
         const even = start + k;
         const odd = even + len / 2;
 
         const tr =
-          real[odd] * wr - imag[odd] * wi;
+          real[odd] * wr -
+          imag[odd] * wi;
 
         const ti =
-          real[odd] * wi + imag[odd] * wr;
+          real[odd] * wi +
+          imag[odd] * wr;
 
         const er = real[even];
         const ei = imag[even];
@@ -74,38 +109,49 @@ function fft(
         imag[even] = ei + ti;
 
         real[odd] = er - tr;
-        imag[odd] = ei - ti;
+        imag[odd] = ei + ti;
 
         const nextWr =
-          wr * stepReal - wi * stepImag;
+          wr * stepReal -
+          wi * stepImag;
 
-        wi = wr * stepImag + wi * stepReal;
+        wi =
+          wr * stepImag +
+          wi * stepReal;
+
         wr = nextWr;
       }
     }
   }
 }
 
-function calculateSpectrum(
+// =====================================
+// SPECTRUM CALCULATION
+// =====================================
+
+export function calculateSpectrum(
   buffer: AudioBuffer
-): Omit<SpectrumResult, "file"> {
+): SpectrumValues {
   const sampleRate = buffer.sampleRate;
   const length = buffer.length;
 
   const channels = Array.from(
     { length: buffer.numberOfChannels },
-    (_, index) => buffer.getChannelData(index)
+    (_, index) =>
+      buffer.getChannelData(index)
   );
 
-  const spectrum = new Float64Array(
-    FFT_SIZE / 2
-  );
+  const spectrum =
+    new Float64Array(FFT_SIZE / 2);
 
-  // Analyze three positions across the recording.
+  // Analyze three positions:
+  // 25%, 50%, and 75% of the recording.
   const positions = [0.25, 0.5, 0.75];
 
   for (const position of positions) {
-    const center = Math.floor(length * position);
+    const center = Math.floor(
+      length * position
+    );
 
     const start = Math.max(
       0,
@@ -115,39 +161,57 @@ function calculateSpectrum(
       )
     );
 
-    const real = new Float64Array(FFT_SIZE);
-    const imag = new Float64Array(FFT_SIZE);
+    const real =
+      new Float64Array(FFT_SIZE);
 
-    for (let i = 0; i < FFT_SIZE; i++) {
-      const sampleIndex = Math.floor(start) + i;
+    const imag =
+      new Float64Array(FFT_SIZE);
+
+    // Prepare samples and apply
+    // a Hann window.
+    for (
+      let i = 0;
+      i < FFT_SIZE;
+      i++
+    ) {
+      const sampleIndex =
+        Math.floor(start) + i;
 
       if (sampleIndex >= length) {
         break;
       }
 
-      // Mix channels to mono.
+      // Mix all channels into mono.
       let sample = 0;
 
       for (const channel of channels) {
-        sample += channel[sampleIndex];
+        sample +=
+          channel[sampleIndex];
       }
 
       sample /= channels.length;
 
-      // Hann window reduces spectral leakage.
+      // Hann window.
       const window =
         0.5 -
         0.5 *
           Math.cos(
-            (2 * Math.PI * i) / (FFT_SIZE - 1)
+            (2 * Math.PI * i) /
+              (FFT_SIZE - 1)
           );
 
       real[i] = sample * window;
     }
 
+    // Transform into frequency domain.
     fft(real, imag);
 
-    for (let bin = 0; bin < spectrum.length; bin++) {
+    // Accumulate magnitude spectra.
+    for (
+      let bin = 0;
+      bin < spectrum.length;
+      bin++
+    ) {
       const magnitude = Math.hypot(
         real[bin],
         imag[bin]
@@ -157,8 +221,13 @@ function calculateSpectrum(
     }
   }
 
-  // Average the three FFT measurements.
-  for (let i = 0; i < spectrum.length; i++) {
+  // Average measurements across
+  // the three audio segments.
+  for (
+    let i = 0;
+    i < spectrum.length;
+    i++
+  ) {
     spectrum[i] /= positions.length;
   }
 
@@ -170,12 +239,20 @@ function calculateSpectrum(
     sampleRate / 2
   );
 
-  // Find strongest frequency in the displayed range.
+  // =====================================
+  // FIND STRONGEST FREQUENCY PEAK
+  // =====================================
+
   let strongestBin = 0;
   let strongestMagnitude = 0;
 
-  for (let bin = 1; bin < spectrum.length; bin++) {
-    const frequency = bin * frequencyPerBin;
+  for (
+    let bin = 1;
+    bin < spectrum.length;
+    bin++
+  ) {
+    const frequency =
+      bin * frequencyPerBin;
 
     if (
       frequency < MIN_HZ ||
@@ -184,18 +261,27 @@ function calculateSpectrum(
       continue;
     }
 
-    if (spectrum[bin] > strongestMagnitude) {
-      strongestMagnitude = spectrum[bin];
+    if (
+      spectrum[bin] >
+      strongestMagnitude
+    ) {
+      strongestMagnitude =
+        spectrum[bin];
+
       strongestBin = bin;
     }
   }
 
   const peakHz =
     strongestMagnitude > 1e-10
-      ? strongestBin * frequencyPerBin
+      ? strongestBin *
+        frequencyPerBin
       : 0;
 
-  // Convert FFT bins into 56 logarithmic bars.
+  // =====================================
+  // LOGARITHMIC FREQUENCY BARS
+  // =====================================
+
   const rawBars = Array.from(
     { length: BAR_COUNT },
     (_, index) => {
@@ -215,17 +301,25 @@ function calculateSpectrum(
 
       const startBin = Math.max(
         1,
-        Math.ceil(low / frequencyPerBin)
+        Math.ceil(
+          low / frequencyPerBin
+        )
       );
 
       const endBin = Math.min(
         spectrum.length - 1,
-        Math.floor(high / frequencyPerBin)
+        Math.floor(
+          high / frequencyPerBin
+        )
       );
 
       let magnitude = 0;
 
-      for (let bin = startBin; bin <= endBin; bin++) {
+      for (
+        let bin = startBin;
+        bin <= endBin;
+        bin++
+      ) {
         magnitude = Math.max(
           magnitude,
           spectrum[bin]
@@ -236,13 +330,23 @@ function calculateSpectrum(
     }
   );
 
-  const maximum = Math.max(...rawBars, 0);
+  // =====================================
+  // NORMALIZATION
+  // =====================================
 
-  // Normalize for display.
-  const bars = rawBars.map((value) =>
-    maximum > 1e-10
-      ? Math.pow(value / maximum, 0.65)
-      : 0
+  const maximum = Math.max(
+    ...rawBars,
+    0
+  );
+
+  const bars = rawBars.map(
+    (value) =>
+      maximum > 1e-10
+        ? Math.pow(
+            value / maximum,
+            0.65
+          )
+        : 0
   );
 
   return {
@@ -251,50 +355,118 @@ function calculateSpectrum(
   };
 }
 
+// =====================================
+// SHARED FFT CACHE
+// =====================================
+
+// The same File object gets analyzed once.
+// In-progress Promises are also cached.
+
+const spectrumCache = new WeakMap<
+  File,
+  Promise<SpectrumValues>
+>();
+
+export function getSpectrum(
+  file: File
+): Promise<SpectrumValues> {
+  const cached =
+    spectrumCache.get(file);
+
+  if (cached) {
+    return cached;
+  }
+
+  const task = (async () => {
+    const context =
+      new AudioContext();
+
+    try {
+      const bytes =
+        await file.arrayBuffer();
+
+      const decoded =
+        await context.decodeAudioData(
+          bytes
+        );
+
+      return calculateSpectrum(
+        decoded
+      );
+    } finally {
+      await context
+        .close()
+        .catch(() => {});
+    }
+  })();
+
+  spectrumCache.set(
+    file,
+    task
+  );
+
+  // Failed analyses can be retried.
+  void task.catch(() => {
+    if (
+      spectrumCache.get(file) === task
+    ) {
+      spectrumCache.delete(
+        file
+      );
+    }
+  });
+
+  return task;
+}
+
+// =====================================
+// FREQUENCY SPECTRUM COMPONENT
+// =====================================
+
 export default function FrequencySpectrum({
   file,
 }: {
   file: File;
 }) {
   const [result, setResult] =
-    useState<SpectrumResult | null>(null);
+    useState<SpectrumResult | null>(
+      null
+    );
 
   const [error, setError] =
-    useState<SpectrumError | null>(null);
+    useState<SpectrumError | null>(
+      null
+    );
 
+  // Analyze whenever the selected file changes.
   useEffect(() => {
     let cancelled = false;
+
     const selectedFile = file;
 
     async function analyze() {
-      let context: AudioContext | null = null;
-
       try {
-        context = new AudioContext();
-
-        const bytes = await selectedFile.arrayBuffer();
-
-        const decoded =
-          await context.decodeAudioData(bytes);
-
-        const spectrum = calculateSpectrum(decoded);
+        const spectrum =
+          await getSpectrum(
+            selectedFile
+          );
 
         if (!cancelled) {
           setResult({
             file: selectedFile,
             ...spectrum,
           });
+
+          // Clear previous errors.
+          setError(null);
         }
       } catch {
         if (!cancelled) {
           setError({
             file: selectedFile,
-            message: "Unable to analyze frequency spectrum.",
+            message:
+              "Unable to analyze frequency spectrum.",
           });
-        }
-      } finally {
-        if (context) {
-          await context.close().catch(() => {});
         }
       }
     }
@@ -306,16 +478,28 @@ export default function FrequencySpectrum({
     };
   }, [file]);
 
+  // Only display data associated with
+  // the currently selected recording.
   const currentResult =
-    result?.file === file ? result : null;
+    result?.file === file
+      ? result
+      : null;
 
   const currentError =
-    error?.file === file ? error : null;
+    error?.file === file
+      ? error
+      : null;
+
+  // =====================================
+  // RENDER
+  // =====================================
 
   return (
     <div className={styles.spectrumCard}>
       <div className={styles.spectrumHeader}>
-        <span>FREQUENCY SPECTRUM</span>
+        <span>
+          FREQUENCY SPECTRUM
+        </span>
 
         <span>
           {currentResult
@@ -326,12 +510,15 @@ export default function FrequencySpectrum({
         </span>
       </div>
 
+      {/* Frequency bars */}
       <div
         className={styles.spectrumBars}
         role="img"
         aria-label={
           currentResult
-            ? `Frequency spectrum with strongest peak near ${Math.round(currentResult.peakHz)} hertz`
+            ? `Frequency spectrum with strongest peak near ${Math.round(
+                currentResult.peakHz
+              )} hertz`
             : "Frequency spectrum loading"
         }
       >
@@ -339,7 +526,9 @@ export default function FrequencySpectrum({
           { length: BAR_COUNT },
           (_, index) => {
             const amplitude =
-              currentResult?.bars[index] ?? 0;
+              currentResult?.bars[
+                index
+              ] ?? 0;
 
             const height =
               3 + amplitude * 97;
@@ -348,7 +537,9 @@ export default function FrequencySpectrum({
               <span
                 key={index}
                 style={{
-                  height: `${Math.round(height)}%`,
+                  height: `${Math.round(
+                    height
+                  )}%`,
                 }}
               />
             );
@@ -356,27 +547,42 @@ export default function FrequencySpectrum({
         )}
       </div>
 
+      {/* Frequency axis */}
       <div className={styles.spectrumAxis}>
         <span>60 Hz</span>
         <span>~700 Hz</span>
         <span>8 kHz</span>
       </div>
 
+      {/* Strongest frequency */}
       {currentResult && (
-        <div className={styles.spectrumPeak}>
-          <span>STRONGEST FREQUENCY PEAK</span>
+        <div
+          className={styles.spectrumPeak}
+        >
+          <span>
+            STRONGEST FREQUENCY PEAK
+          </span>
+
           <strong>
-            {currentResult.peakHz.toFixed(1)} Hz
+            {currentResult.peakHz.toFixed(
+              1
+            )}{" "}
+            Hz
           </strong>
         </div>
       )}
 
+      {/* Error feedback */}
       {currentError && (
-        <p className={styles.spectrumError}>
+        <p
+          className={styles.spectrumError}
+          role="alert"
+        >
           {currentError.message}
         </p>
       )}
 
+      {/* Explanation */}
       <p className={styles.spectrumNote}>
         Log-frequency view · Relative magnitude ·
         Averaged across three audio segments
