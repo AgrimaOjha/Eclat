@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getDecodedAudio } from "./lib/audioAnalysis";
 import styles from "./page.module.css";
 
 // =====================================
@@ -36,8 +37,8 @@ type SpectrumError = {
 // =====================================
 
 // Radix-2 Cooley-Tukey FFT.
-// Converts time-domain samples into
-// frequency-domain coefficients.
+// Converts time-domain audio samples
+// into frequency-domain coefficients.
 
 function fft(
   real: Float64Array,
@@ -71,7 +72,7 @@ function fft(
     }
   }
 
-  // Iterative butterfly stages.
+  // Iterative FFT butterfly stages.
   for (let len = 2; len <= n; len *= 2) {
     const angle = (-2 * Math.PI) / len;
 
@@ -105,12 +106,15 @@ function fft(
         const er = real[even];
         const ei = imag[even];
 
+        // Even butterfly output.
         real[even] = er + tr;
         imag[even] = ei + ti;
 
+        // Odd butterfly output.
         real[odd] = er - tr;
-        imag[odd] = ei + ti;
+        imag[odd] = ei - ti;
 
+        // Update complex twiddle factor.
         const nextWr =
           wr * stepReal -
           wi * stepImag;
@@ -144,7 +148,7 @@ export function calculateSpectrum(
   const spectrum =
     new Float64Array(FFT_SIZE / 2);
 
-  // Analyze three positions:
+  // Analyze three different sections:
   // 25%, 50%, and 75% of the recording.
   const positions = [0.25, 0.5, 0.75];
 
@@ -167,8 +171,10 @@ export function calculateSpectrum(
     const imag =
       new Float64Array(FFT_SIZE);
 
-    // Prepare samples and apply
-    // a Hann window.
+    // =====================================
+    // PREPARE AUDIO SAMPLES
+    // =====================================
+
     for (
       let i = 0;
       i < FFT_SIZE;
@@ -181,17 +187,16 @@ export function calculateSpectrum(
         break;
       }
 
-      // Mix all channels into mono.
+      // Combine channels into mono.
       let sample = 0;
 
       for (const channel of channels) {
-        sample +=
-          channel[sampleIndex];
+        sample += channel[sampleIndex];
       }
 
       sample /= channels.length;
 
-      // Hann window.
+      // Hann window reduces spectral leakage.
       const window =
         0.5 -
         0.5 *
@@ -203,10 +208,10 @@ export function calculateSpectrum(
       real[i] = sample * window;
     }
 
-    // Transform into frequency domain.
+    // Convert samples to frequency domain.
     fft(real, imag);
 
-    // Accumulate magnitude spectra.
+    // Accumulate frequency magnitudes.
     for (
       let bin = 0;
       bin < spectrum.length;
@@ -221,8 +226,10 @@ export function calculateSpectrum(
     }
   }
 
-  // Average measurements across
-  // the three audio segments.
+  // =====================================
+  // AVERAGE FFT RESULTS
+  // =====================================
+
   for (
     let i = 0;
     i < spectrum.length;
@@ -331,7 +338,7 @@ export function calculateSpectrum(
   );
 
   // =====================================
-  // NORMALIZATION
+  // NORMALIZE FOR VISUALIZATION
   // =====================================
 
   const maximum = Math.max(
@@ -359,8 +366,11 @@ export function calculateSpectrum(
 // SHARED FFT CACHE
 // =====================================
 
-// The same File object gets analyzed once.
-// In-progress Promises are also cached.
+// Stores a spectrum calculation for each
+// uploaded File object.
+//
+// Individual spectra and the shared
+// comparison can reuse the same result.
 
 const spectrumCache = new WeakMap<
   File,
@@ -377,42 +387,32 @@ export function getSpectrum(
     return cached;
   }
 
-  const task = (async () => {
-    const context =
-      new AudioContext();
+  // =====================================
+  // UNIFIED AUDIO DECODING
+  // =====================================
 
-    try {
-      const bytes =
-        await file.arrayBuffer();
+  const task = (async (): Promise<SpectrumValues> => {
+    // Reuse the shared decoded AudioBuffer.
+    // No separate AudioContext is created here.
+    const decoded =
+      await getDecodedAudio(file);
 
-      const decoded =
-        await context.decodeAudioData(
-          bytes
-        );
-
-      return calculateSpectrum(
-        decoded
-      );
-    } finally {
-      await context
-        .close()
-        .catch(() => {});
-    }
+    // Run the FFT on the decoded samples.
+    return calculateSpectrum(decoded);
   })();
 
+  // Cache the pending calculation immediately.
   spectrumCache.set(
     file,
     task
   );
 
-  // Failed analyses can be retried.
+  // Remove failures so users can retry.
   void task.catch(() => {
     if (
       spectrumCache.get(file) === task
     ) {
-      spectrumCache.delete(
-        file
-      );
+      spectrumCache.delete(file);
     }
   });
 
@@ -438,7 +438,10 @@ export default function FrequencySpectrum({
       null
     );
 
-  // Analyze whenever the selected file changes.
+  // =====================================
+  // ANALYZE SELECTED FILE
+  // =====================================
+
   useEffect(() => {
     let cancelled = false;
 
@@ -446,6 +449,7 @@ export default function FrequencySpectrum({
 
     async function analyze() {
       try {
+        // Uses the shared FFT cache.
         const spectrum =
           await getSpectrum(
             selectedFile
@@ -457,7 +461,7 @@ export default function FrequencySpectrum({
             ...spectrum,
           });
 
-          // Clear previous errors.
+          // Clear an earlier error.
           setError(null);
         }
       } catch {
@@ -478,8 +482,10 @@ export default function FrequencySpectrum({
     };
   }, [file]);
 
-  // Only display data associated with
-  // the currently selected recording.
+  // =====================================
+  // DISPLAY CURRENT FILE ONLY
+  // =====================================
+
   const currentResult =
     result?.file === file
       ? result
@@ -496,6 +502,7 @@ export default function FrequencySpectrum({
 
   return (
     <div className={styles.spectrumCard}>
+      {/* HEADER */}
       <div className={styles.spectrumHeader}>
         <span>
           FREQUENCY SPECTRUM
@@ -510,7 +517,7 @@ export default function FrequencySpectrum({
         </span>
       </div>
 
-      {/* Frequency bars */}
+      {/* FREQUENCY BARS */}
       <div
         className={styles.spectrumBars}
         role="img"
@@ -547,14 +554,14 @@ export default function FrequencySpectrum({
         )}
       </div>
 
-      {/* Frequency axis */}
+      {/* FREQUENCY AXIS */}
       <div className={styles.spectrumAxis}>
         <span>60 Hz</span>
         <span>~700 Hz</span>
         <span>8 kHz</span>
       </div>
 
-      {/* Strongest frequency */}
+      {/* STRONGEST FREQUENCY */}
       {currentResult && (
         <div
           className={styles.spectrumPeak}
@@ -572,7 +579,7 @@ export default function FrequencySpectrum({
         </div>
       )}
 
-      {/* Error feedback */}
+      {/* ERROR MESSAGE */}
       {currentError && (
         <p
           className={styles.spectrumError}
@@ -582,7 +589,7 @@ export default function FrequencySpectrum({
         </p>
       )}
 
-      {/* Explanation */}
+      {/* EXPLANATION */}
       <p className={styles.spectrumNote}>
         Log-frequency view · Relative magnitude ·
         Averaged across three audio segments

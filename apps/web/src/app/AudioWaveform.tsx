@@ -3,9 +3,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent, KeyboardEvent } from "react";
+
+import { getDecodedAudio } from "./lib/audioAnalysis";
 import styles from "./page.module.css";
 
+// =====================================
+// CONFIGURATION
+// =====================================
+
 const BAR_COUNT = 45;
+
+// =====================================
+// TYPES
+// =====================================
 
 type WaveformData = {
   file: File;
@@ -22,14 +32,24 @@ type PlaybackPosition = {
   seconds: number;
 };
 
+type AudioDuration = {
+  file: File;
+  seconds: number;
+};
+
+// =====================================
+// EXTRACT WAVEFORM PEAKS
+// =====================================
+
 function extractPeaks(buffer: AudioBuffer): number[] {
   const channels = Array.from(
     { length: buffer.numberOfChannels },
-    (_, i) => buffer.getChannelData(i)
+    (_, index) => buffer.getChannelData(index)
   );
 
-  const samplesPerBar = Math.ceil(
-    buffer.length / BAR_COUNT
+  const samplesPerBar = Math.max(
+    1,
+    Math.ceil(buffer.length / BAR_COUNT)
   );
 
   const peaks = Array.from(
@@ -58,13 +78,18 @@ function extractPeaks(buffer: AudioBuffer): number[] {
 
   const maxPeak = Math.max(...peaks, 0);
 
+  // Normalize each peak between 0 and 1.
   return peaks.map((peak) =>
     maxPeak === 0 ? 0 : peak / maxPeak
   );
 }
 
+// =====================================
+// FORMAT PLAYBACK TIME
+// =====================================
+
 function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds)) {
+  if (!Number.isFinite(seconds) || seconds < 0) {
     return "0:00";
   }
 
@@ -74,6 +99,10 @@ function formatTime(seconds: number): string {
 
   return `${minutes}:${String(remaining).padStart(2, "0")}`;
 }
+
+// =====================================
+// AUDIO WAVEFORM COMPONENT
+// =====================================
 
 export default function AudioWaveform({
   file,
@@ -91,65 +120,80 @@ export default function AudioWaveform({
   const [position, setPosition] =
     useState<PlaybackPosition | null>(null);
 
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] =
+    useState<AudioDuration | null>(null);
 
   const [decodeError, setDecodeError] =
     useState<File | null>(null);
+
+  // =====================================
+  // LOAD AUDIO WHEN FILE CHANGES
+  // =====================================
 
   useEffect(() => {
     if (!file) {
       return;
     }
 
-    
     let cancelled = false;
-    const url = URL.createObjectURL(file);
+    const selectedFile = file;
+
+    // Create a local browser URL for playback.
+    const url = URL.createObjectURL(selectedFile);
+
+    // Capture the current element for cleanup.
     const audioElement = audioRef.current;
 
-
     async function prepareAudio() {
-      let context: AudioContext | null = null;
-
       try {
-        context = new AudioContext();
-
-        const bytes = await file!.arrayBuffer();
+        // Both waveform and FFT reuse the
+        // same decoded AudioBuffer.
         const decoded =
-          await context.decodeAudioData(bytes);
+          await getDecodedAudio(selectedFile);
 
         const peaks = extractPeaks(decoded);
 
         if (!cancelled) {
-          setWaveform({ file: file!, peaks });
+          setWaveform({
+            file: selectedFile,
+            peaks,
+          });
+
+          // Clear errors after a successful decode.
+          setDecodeError(null);
         }
       } catch {
         if (!cancelled) {
-          setDecodeError(file);
-        }
-      } finally {
-        if (context) {
-          await context.close().catch(() => {});
+          setDecodeError(selectedFile);
         }
       }
     }
 
-    // Update the source after the effect setup.
+    // Avoid a synchronous state update in the effect.
     queueMicrotask(() => {
       if (!cancelled) {
-        setSource({ file, url });
+        setSource({
+          file: selectedFile,
+          url,
+        });
       }
     });
 
     void prepareAudio();
 
-    
     return () => {
-        cancelled = true;
-        audioElement?.pause();
-        URL.revokeObjectURL(url);
-    };
+      cancelled = true;
 
+      audioElement?.pause();
+
+      // Release the temporary browser URL.
+      URL.revokeObjectURL(url);
+    };
   }, [file]);
+
+  // =====================================
+  // CURRENT FILE DATA
+  // =====================================
 
   const peaks =
     file && waveform?.file === file
@@ -166,9 +210,15 @@ export default function AudioWaveform({
       ? position.seconds
       : 0;
 
+  const durationSeconds =
+    file && duration?.file === file
+      ? duration.seconds
+      : 0;
+
   const validDuration =
-    Number.isFinite(duration) && duration > 0
-      ? duration
+    Number.isFinite(durationSeconds) &&
+    durationSeconds > 0
+      ? durationSeconds
       : 0;
 
   const progress =
@@ -178,6 +228,10 @@ export default function AudioWaveform({
           Math.max(0, currentTime / validDuration)
         )
       : 0;
+
+  // =====================================
+  // SEEK TO A POSITION
+  // =====================================
 
   function seekTo(fraction: number) {
     const audio = audioRef.current;
@@ -206,6 +260,10 @@ export default function AudioWaveform({
     });
   }
 
+  // =====================================
+  // CLICK TO SEEK
+  // =====================================
+
   function handleWaveformClick(
     event: MouseEvent<HTMLButtonElement>
   ) {
@@ -222,30 +280,41 @@ export default function AudioWaveform({
     seekTo(fraction);
   }
 
+  // =====================================
+  // KEYBOARD SEEKING
+  // =====================================
+
   function handleWaveformKey(
     event: KeyboardEvent<HTMLButtonElement>
   ) {
-    if (!file) {
+    if (!file || validDuration === 0) {
       return;
     }
 
     if (event.key === "ArrowRight") {
       event.preventDefault();
+
       seekTo(
-        (currentTime + 1) / (validDuration || 1)
+        (currentTime + 1) / validDuration
       );
     }
 
     if (event.key === "ArrowLeft") {
       event.preventDefault();
+
       seekTo(
-        (currentTime - 1) / (validDuration || 1)
+        (currentTime - 1) / validDuration
       );
     }
   }
 
+  // =====================================
+  // RENDER
+  // =====================================
+
   return (
     <>
+      {/* INTERACTIVE WAVEFORM */}
       <button
         type="button"
         className={`${styles.waveArt} ${styles.seekableWaveform}`}
@@ -254,35 +323,39 @@ export default function AudioWaveform({
         disabled={!audioUrl || validDuration === 0}
         aria-label={
           file
-            ? `Seek within ${file.name}`
+            ? `Seek within ${file.name}, current position ${formatTime(
+                currentTime
+              )} of ${formatTime(validDuration)}`
             : "No recording selected"
         }
         title={
           file
-            ? "Click to jump to a moment in the audio"
+            ? "Click or use arrow keys to seek within the recording"
             : "Choose a recording first"
         }
       >
         {Array.from(
           { length: BAR_COUNT },
-          (_, i) => {
+          (_, index) => {
+            // Decorative bars before uploading a file.
             const fallback =
               12 +
               Math.abs(
-                Math.sin(i * 0.57) *
-                  Math.cos(i * 0.13)
+                Math.sin(index * 0.57) *
+                  Math.cos(index * 0.13)
               ) * 65;
 
+            // Real waveform amplitudes after decoding.
             const height = peaks
-              ? 4 + peaks[i] * 76
+              ? 4 + peaks[index] * 76
               : fallback;
 
             const played =
-              i / BAR_COUNT <= progress;
+              index / BAR_COUNT <= progress;
 
             return (
               <span
-                key={i}
+                key={index}
                 aria-hidden="true"
                 style={{
                   height: `${Math.round(height)}%`,
@@ -293,6 +366,7 @@ export default function AudioWaveform({
           }
         )}
 
+        {/* MOVING PLAYHEAD */}
         {file && audioUrl && (
           <i
             className={styles.waveformPlayhead}
@@ -304,10 +378,12 @@ export default function AudioWaveform({
         )}
       </button>
 
+      {/* AUDIO PLAYER */}
       {file && audioUrl && (
         <div className={styles.waveformPlayback}>
           <audio
             ref={audioRef}
+            key={audioUrl}
             controls
             preload="metadata"
             src={audioUrl}
@@ -315,7 +391,11 @@ export default function AudioWaveform({
             onLoadedMetadata={(event) => {
               const audio = event.currentTarget;
 
-              setDuration(audio.duration);
+              setDuration({
+                file,
+                seconds: audio.duration,
+              });
+
               setPosition({
                 file,
                 seconds: 0,
@@ -333,14 +413,15 @@ export default function AudioWaveform({
                 seconds: event.currentTarget.currentTime,
               });
             }}
-            onEnded={() => {
+            onEnded={(event) => {
               setPosition({
                 file,
-                seconds: validDuration,
+                seconds: event.currentTarget.duration,
               });
             }}
           />
 
+          {/* PLAYBACK TIMESTAMPS */}
           <div className={styles.waveformTime}>
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(validDuration)}</span>
@@ -348,8 +429,12 @@ export default function AudioWaveform({
         </div>
       )}
 
+      {/* DECODING ERROR */}
       {file && decodeError === file && (
-        <p className={styles.waveformError}>
+        <p
+          className={styles.waveformError}
+          role="alert"
+        >
           Waveform preview unavailable for this recording.
         </p>
       )}
