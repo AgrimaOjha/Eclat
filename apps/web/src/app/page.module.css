@@ -614,3 +614,280 @@
     transition: none;
   }
 }
+
+/* Module 04 — Shared frequency spectrum */
+
+.compareSpectrumSection {
+  margin-top: 48px;
+  padding: 32px;
+  border: 1px solid rgba(221, 161, 190, 0.22);
+  border-radius: 20px;
+  background: #211e26;
+}
+
+.compareSpectrumHeading h3 {
+  margin: 14px 0;
+  color: #f4ece8;
+  font-family: Georgia, serif;
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.compareSpectrumEyebrow {
+  color: #dda1be;
+  font-size: 11px;
+  letter-spacing: 0.17em;
+}
+
+.compareSpectrumDescription {
+  color: #b9aeb9;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.compareSpectrumLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin: 30px 0 24px;
+}
+
+.compareLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: #ddd1dc;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.compareLegendA,
+.compareLegendB {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.compareLegendA {
+  background: #dda1be;
+}
+
+.compareLegendB {
+  background: #79b7b4;
+}
+
+.compareSpectrumChart {
+  display: grid;
+  grid-template-columns: repeat(56, minmax(0, 1fr));
+  align-items: end;
+  gap: 3px;
+  height: 210px;
+  padding: 12px 0 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.compareSpectrumBarGroup {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 1px;
+  height: 100%;
+  min-width: 0;
+}
+
+.compareSpectrumBarA,
+.compareSpectrumBarB {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  border-radius: 3px 3px 0 0;
+  transition: height 200ms ease;
+}
+
+.compareSpectrumBarA {
+  background: #dda1be;
+}
+
+.compareSpectrumBarB {
+  background: #79b7b4;
+}
+
+.compareSpectrumAxis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  color: #aaa0ad;
+  font-size: 11px;
+}
+
+.compareSpectrumStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.compareSpectrumStats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid rgba(221, 161, 190, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.compareSpectrumStats span {
+  color: #b9aeb9;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.compareSpectrumStats strong {
+  color: #f4ece8;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.compareSpectrumLoading {
+  padding: 40px 0;
+  color: #cbbac7;
+  font-size: 14px;
+}
+
+.compareSpectrumNote {
+  margin-top: 24px;
+  color: #a99ba9;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .compareSpectrumSection {
+    padding: 20px 14px;
+  }
+
+  .compareSpectrumChart {
+    gap: 1px;
+    height: 150px;
+  }
+
+  .compareSpectrumStats {
+    grid-template-columns: 1fr;
+  }
+
+  .compareSpectrumStats strong {
+    font-size: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compareSpectrumBarA,
+  .compareSpectrumBarB {
+    transition: none;
+  }
+}
+
+/* Module 04 — Spectral difference intelligence */
+
+.spectralDifference {
+  margin-top: 42px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(221, 161, 190, 0.18);
+}
+
+.spectralDifferenceHeading h4 {
+  margin: 0 0 8px;
+  font-family: Georgia, serif;
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 400;
+  color: #f4ece8;
+}
+
+.spectralDifferenceHeading p {
+  margin: 0 0 24px;
+  color: #b9aeb9;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.spectralDifferenceChart {
+  display: grid;
+  grid-template-columns: repeat(56, minmax(0, 1fr));
+  align-items: end;
+  gap: 3px;
+  height: 170px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.spectralDifferenceChart > span {
+  display: block;
+  min-width: 0;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(
+    to top,
+    #946b88,
+    #e6acc5
+  );
+  transition: height 200ms ease;
+}
+
+.spectralInsights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.spectralInsights > div {
+  padding: 20px;
+  border: 1px solid rgba(221, 161, 190, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.spectralInsights span {
+  display: block;
+  margin-bottom: 14px;
+  color: #b9aeb9;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+}
+
+.spectralInsights strong {
+  color: #f4ece8;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(19px, 2.2vw, 29px);
+  font-variant-numeric: tabular-nums;
+}
+
+.spectralInterpretation {
+  margin-top: 20px;
+  color: #c8b7c4;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 700px) {
+  .spectralInsights {
+    grid-template-columns: 1fr;
+  }
+
+  .spectralDifferenceChart {
+    gap: 1px;
+    height: 130px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spectralDifferenceChart > span {
+    transition: none;
+  }
+}
