@@ -34,3 +34,54 @@ a:focus-visible {
   background: #dca3b9;
   color: #211820;
 }
+
+/* =========================================
+   ÉCLAT — GLOBAL LIGHT / DARK THEME
+========================================= */
+
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --theme-bg: #100d13;
+  --theme-surface: #241b28;
+  --theme-surface-alt: #302334;
+  --theme-text: #f7edf2;
+  --theme-muted: #baa9ba;
+  --theme-accent: #e2a8c9;
+  --theme-accent-text: #1c111c;
+  --theme-secondary: #a6e4d1;
+  --theme-border: rgba(244, 220, 232, 0.18);
+  --theme-shadow: rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --theme-bg: #fff7f8;
+  --theme-surface: #ffffff;
+  --theme-surface-alt: #f2e7f5;
+  --theme-text: #29213c;
+  --theme-muted: #756b80;
+  --theme-accent: #9145d2;
+  --theme-accent-text: #ffffff;
+  --theme-secondary: #f3b48f;
+  --theme-border: rgba(93, 54, 127, 0.15);
+  --theme-shadow: rgba(77, 39, 104, 0.10);
+}
+
+html,
+body {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+html {
+  transition: background-color 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    transition: none;
+  }
+}

@@ -1,7 +1,7 @@
 
 import type { Metadata } from "next";
 import "./globals.css";
-
+import { ThemeProvider } from "./ThemeProvider";
 export const metadata: Metadata = {
   title: "ÉCLAT — Sound Intelligence Studio",
   description:
@@ -15,7 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><ThemeProvider>
+    {children}
+  </ThemeProvider></body>
     </html>
   );
 }

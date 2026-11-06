@@ -1349,3 +1349,2674 @@
     padding: 20px;
   }
 }
+
+/* ============================================================
+   ÉCLAT — CINEMATIC ART DIRECTION
+   Creative Sound Laboratory / Visual System 2.0
+
+   Palette:
+   Obsidian       #100e12
+   Deep plum      #211721
+   Dusty rose     #d6a0ba
+   Pale pink      #f4dce8
+   Mint           #9cd8ca
+   Silver         #d8d3d8
+
+   Add to the END of page.module.css.
+============================================================ */
+
+/* ============================================================
+   01 — DESIGN TOKENS
+============================================================ */
+
+.page {
+  --eclat-bg: #100e12;
+  --eclat-surface: #1c171f;
+  --eclat-plum: #2c1d2d;
+
+  --eclat-pink: #d6a0ba;
+  --eclat-pink-soft: #f4dce8;
+  --eclat-mint: #9cd8ca;
+
+  --eclat-white: #f7f2f5;
+  --eclat-muted: #b2a6b1;
+
+  --eclat-border: rgba(244, 220, 232, 0.13);
+
+  --eclat-glow:
+    0 0 55px rgba(214, 160, 186, 0.07);
+
+  color: var(--eclat-white);
+  background: var(--eclat-bg);
+
+  min-height: 100vh;
+  overflow: clip;
+  position: relative;
+
+  isolation: isolate;
+}
+
+/* ============================================================
+   02 — ATMOSPHERIC BACKGROUND
+============================================================ */
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      ellipse 50% 22% at 78% 9%,
+      rgba(159, 80, 138, 0.19),
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 38% 19% at 12% 29%,
+      rgba(83, 122, 119, 0.09),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 48% 19% at 52% 68%,
+      rgba(116, 62, 103, 0.10),
+      transparent 80%
+    ),
+    linear-gradient(
+      180deg,
+      #100e12 0%,
+      #171119 40%,
+      #110e13 100%
+    );
+}
+
+/* Fine editorial grid */
+
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  pointer-events: none;
+  opacity: 0.1;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.045) 1px,
+      transparent 1px
+    );
+
+  background-size: 86px 86px;
+
+  mask-image: linear-gradient(
+    180deg,
+    black,
+    transparent 75%
+  );
+}
+
+/* ============================================================
+   03 — LARGE EDITORIAL TYPOGRAPHY
+============================================================ */
+
+.page h1,
+.page h2,
+.page h3,
+.page h4 {
+  text-wrap: balance;
+}
+
+.page h1 {
+  font-size: clamp(4rem, 10vw, 10.5rem);
+  font-weight: 500;
+
+  letter-spacing: -0.085em;
+  line-height: 0.91;
+
+  color: var(--eclat-white);
+}
+
+.page h2 {
+  font-size: clamp(2.5rem, 5vw, 5.2rem);
+  font-weight: 500;
+  letter-spacing: -0.065em;
+  line-height: 1.03;
+}
+
+.page h3 {
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.page p {
+  text-wrap: pretty;
+}
+
+.page ::selection {
+  background: #d6a0ba;
+  color: #171017;
+}
+
+/* ============================================================
+   04 — GLASS / CHROME SURFACES
+============================================================ */
+
+.spectrumCard,
+.compareSpectrumSection,
+.audioLevelsSection,
+.advancedSpectralSection {
+  position: relative;
+  isolation: isolate;
+
+  border: 1px solid var(--eclat-border);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.045),
+      transparent 38%
+    ),
+    linear-gradient(
+      160deg,
+      rgba(40, 28, 42, 0.88),
+      rgba(21, 17, 24, 0.94)
+    );
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.spectrumCard {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.compareSpectrumSection {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.audioLevelsSection,
+.advancedSpectralSection {
+  border-radius: 24px;
+}
+
+/* Soft corner illumination */
+
+.compareSpectrumSection::before,
+.audioLevelsSection::before,
+.advancedSpectralSection::before {
+  content: "";
+  position: absolute;
+
+  top: -170px;
+  right: -120px;
+
+  width: 380px;
+  height: 380px;
+
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+
+  background: radial-gradient(
+    circle,
+    rgba(214, 160, 186, 0.105),
+    transparent 70%
+  );
+}
+
+.audioLevelsSection::before {
+  background: radial-gradient(
+    circle,
+    rgba(156, 216, 202, 0.085),
+    transparent 70%
+  );
+}
+
+/* ============================================================
+   05 — INTERACTIVE WAVEFORM
+============================================================ */
+
+.waveArt {
+  position: relative;
+  isolation: isolate;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(214, 160, 186, 0.09),
+      transparent 74%
+    ),
+    linear-gradient(
+      180deg,
+      #211923,
+      #141117
+    );
+
+  border: 1px solid rgba(244, 220, 232, 0.11);
+  border-radius: 19px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 18px 50px rgba(0, 0, 0, 0.18);
+
+  transition:
+    border-color 250ms ease,
+    box-shadow 250ms ease,
+    transform 250ms ease;
+}
+
+.waveArt:not(:disabled):hover {
+  border-color: rgba(214, 160, 186, 0.38);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 0 35px rgba(214, 160, 186, 0.10);
+}
+
+.waveArt:focus-visible {
+  outline: 2px solid var(--eclat-mint);
+  outline-offset: 4px;
+}
+
+.waveArt span {
+  background: linear-gradient(
+    180deg,
+    #f3c6df 0%,
+    #c88fb2 50%,
+    #8a5e83 100%
+  );
+
+  border-radius: 999px;
+
+  box-shadow:
+    0 0 10px rgba(214, 160, 186, 0.12);
+
+  transition:
+    height 300ms ease,
+    opacity 180ms ease;
+}
+
+/* Mint playhead */
+
+.waveformPlayhead {
+  position: absolute;
+  z-index: 3;
+
+  top: 8%;
+  bottom: 8%;
+
+  width: 2px;
+
+  background: #b3f4df;
+
+  box-shadow:
+    0 0 12px rgba(156, 216, 202, 0.8),
+    0 0 30px rgba(156, 216, 202, 0.35);
+
+  pointer-events: none;
+}
+
+.waveformPlayback {
+  margin-top: 18px;
+}
+
+.audioPlayer {
+  width: 100%;
+  accent-color: #d6a0ba;
+}
+
+.waveformTime {
+  color: #b9abb8;
+
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   06 — FREQUENCY SPECTRUM
+============================================================ */
+
+.spectrumHeader {
+  color: #d3bdcc;
+  letter-spacing: 0.15em;
+}
+
+.spectrumBars {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(214, 160, 186, 0.055),
+      transparent 60%
+    );
+}
+
+.spectrumBars > span {
+  border-radius: 3px 3px 0 0;
+
+  background: linear-gradient(
+    180deg,
+    #f1c3dc 0%,
+    #bf85ab 55%,
+    #704a70 100%
+  );
+
+  box-shadow:
+    0 0 13px rgba(214, 160, 186, 0.12);
+
+  transition:
+    height 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 300ms ease;
+}
+
+.spectrumPeak strong {
+  color: #f4dce8;
+  font-weight: 500;
+}
+
+.spectrumAxis {
+  color: #a597a6;
+}
+
+.spectrumNote {
+  color: #988b9c;
+}
+
+/* ============================================================
+   07 — COMBINED SPECTRAL VISUALIZATION
+============================================================ */
+
+.compareSpectrumEyebrow {
+  color: var(--eclat-pink);
+  font-size: 11px;
+  letter-spacing: 0.19em;
+}
+
+.compareSpectrumHeading h3 {
+  font-size: clamp(2.1rem, 4vw, 4.2rem);
+  letter-spacing: -0.065em;
+
+  color: #f5e6ee;
+}
+
+.compareSpectrumDescription {
+  color: #b7a9b6;
+  line-height: 1.8;
+}
+
+.compareSpectrumLegend {
+  gap: 20px;
+}
+
+.compareLegendItem {
+  color: #d0bfce;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.compareSpectrumChart {
+  position: relative;
+  overflow: hidden;
+
+  border-radius: 18px 18px 0 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(156, 216, 202, 0.045),
+      transparent 50%
+    ),
+    rgba(12, 11, 16, 0.35);
+}
+
+.compareSpectrumBarA {
+  background: linear-gradient(
+    180deg,
+    #f4c2df,
+    #c98db1 70%,
+    #865778
+  );
+
+  box-shadow:
+    0 0 12px rgba(214, 160, 186, 0.15);
+}
+
+.compareSpectrumBarB {
+  background: linear-gradient(
+    180deg,
+    #c4f5e7,
+    #7cccb8 70%,
+    #3c857b
+  );
+
+  box-shadow:
+    0 0 12px rgba(156, 216, 202, 0.12);
+}
+
+.compareSpectrumStats {
+  border-color: rgba(244, 220, 232, 0.11);
+}
+
+.compareSpectrumStats strong {
+  color: #f6e6ee;
+  font-weight: 500;
+}
+
+.compareSpectrumAxis {
+  color: #968995;
+}
+
+/* ============================================================
+   08 — SPECTRAL DIFFERENCE MAP
+============================================================ */
+
+.spectralDifference {
+  position: relative;
+  overflow: hidden;
+
+  border: 1px solid rgba(244, 220, 232, 0.10);
+  border-radius: 20px;
+
+  background: rgba(14, 12, 17, 0.37);
+}
+
+.spectralDifferenceHeading h4 {
+  color: #f2dfeb;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.spectralDifferenceHeading p {
+  color: #b1a1b0;
+}
+
+.spectralDifferenceChart {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(214, 160, 186, 0.05),
+      transparent 80%
+    );
+}
+
+.spectralDifferenceChart > span {
+  border-radius: 3px 3px 0 0;
+
+  background: linear-gradient(
+    180deg,
+    #eeb8d4,
+    #aa719d 65%,
+    #614365
+  );
+
+  box-shadow:
+    0 0 10px rgba(214, 160, 186, 0.10);
+}
+
+.spectralInsights > div {
+  border-color: rgba(244, 220, 232, 0.10);
+}
+
+.spectralInsights strong {
+  color: #f1dce8;
+  font-weight: 500;
+}
+
+.spectralInterpretation,
+.compareSpectrumNote {
+  color: #ad9cac;
+  line-height: 1.85;
+}
+
+/* ============================================================
+   09 — SPECTRAL SIMILARITY
+============================================================ */
+
+.similaritySection {
+  position: relative;
+  overflow: hidden;
+
+  margin-top: 40px;
+  padding: clamp(24px, 4vw, 48px);
+
+  border: 1px solid rgba(214, 160, 186, 0.21);
+  border-radius: 26px;
+
+  background:
+    radial-gradient(
+      ellipse at 90% 0%,
+      rgba(222, 133, 184, 0.14),
+      transparent 60%
+    ),
+    linear-gradient(
+      150deg,
+      #30202e,
+      #1a151e 75%
+    );
+
+  box-shadow:
+    0 25px 80px rgba(0, 0, 0, 0.18);
+}
+
+.similarityHeader {
+  color: #d8adc5;
+  letter-spacing: 0.18em;
+}
+
+.similarityEyebrow {
+  color: #c3a8bb;
+  letter-spacing: 0.17em;
+}
+
+.similarityScore {
+  color: #fae6f0;
+
+  font-size: clamp(4rem, 9vw, 7.5rem);
+  font-weight: 450;
+
+  line-height: 0.95;
+  letter-spacing: -0.09em;
+
+  text-shadow:
+    0 0 55px rgba(214, 160, 186, 0.14);
+}
+
+.similarityLevel {
+  border: 1px solid rgba(244, 220, 232, 0.24);
+  color: #f1c8df;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.similarityProgress {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.similarityProgressFill {
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    #9e658f 0%,
+    #e3a4c7 58%,
+    #c0f0df 100%
+  );
+
+  box-shadow:
+    0 0 22px rgba(214, 160, 186, 0.35);
+
+  transition:
+    width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.similarityExplanation {
+  color: #efdae7;
+  line-height: 1.8;
+}
+
+.similarityDisclaimer {
+  color: #a896a8;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   10 — AUDIO LEVEL METER DESIGN
+============================================================ */
+
+.audioLevelsHeading h3,
+.advancedSpectralHeading h3 {
+  font-size: clamp(2rem, 3.5vw, 3.3rem);
+
+  color: #f5e5ee;
+  letter-spacing: -0.06em;
+}
+
+.audioLevelsHeading p,
+.advancedSpectralHeading p {
+  color: #b9a8b7;
+  line-height: 1.8;
+}
+
+.audioLevelCard,
+.advancedSpectralCard {
+  border: 1px solid rgba(244, 220, 232, 0.10);
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.012)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  transition:
+    border-color 250ms ease,
+    background 250ms ease,
+    transform 250ms ease;
+}
+
+.audioLevelCard:hover,
+.advancedSpectralCard:hover {
+  border-color: rgba(214, 160, 186, 0.24);
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  transform: translateY(-3px);
+}
+
+.audioLevelValue {
+  color: #f6dfeb;
+
+  font-size: clamp(2rem, 3.4vw, 3.1rem);
+  font-weight: 450;
+  letter-spacing: -0.06em;
+}
+
+.audioLevelMeter {
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.audioLevelMeterA {
+  background: linear-gradient(
+    90deg,
+    #9f6b98,
+    #f1c0dc
+  );
+}
+
+.audioLevelMeterB {
+  background: linear-gradient(
+    90deg,
+    #437d76,
+    #b6efdd
+  );
+}
+
+.audioLevelDifference,
+.advancedSpectralSummary {
+  border: 1px solid rgba(214, 160, 186, 0.15);
+  border-radius: 20px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(214, 160, 186, 0.065),
+    rgba(214, 160, 186, 0.015)
+  );
+}
+
+.audioLevelDifferenceValue {
+  font-size: clamp(2.1rem, 4.4vw, 4rem);
+  font-weight: 450;
+  letter-spacing: -0.07em;
+
+  color: #f6dfeb;
+}
+
+/* ============================================================
+   11 — ADVANCED SPECTRAL METRICS
+============================================================ */
+
+.advancedSpectralHeader,
+.audioLevelsHeader {
+  color: #d4a5c0;
+  letter-spacing: 0.18em;
+}
+
+.advancedSpectralTrackA {
+  color: #f0b8d4;
+}
+
+.advancedSpectralTrackB {
+  color: #a5e4d4;
+}
+
+.advancedSpectralMetric strong {
+  color: #f7e1ec;
+
+  font-size: clamp(1.7rem, 3vw, 2.7rem);
+  font-weight: 450;
+  letter-spacing: -0.05em;
+}
+
+.advancedSpectralMetric p {
+  color: #ad9eae;
+}
+
+.advancedSpectralDifferenceGrid strong {
+  color: #f3dce8;
+  font-weight: 450;
+}
+
+.advancedSpectralInterpretation,
+.advancedSpectralNote,
+.audioLevelNote {
+  color: #ad9dac;
+  line-height: 1.85;
+}
+
+/* ============================================================
+   12 — BUTTONS AND INTERACTIONS
+============================================================ */
+
+.page button {
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform 250ms ease,
+    box-shadow 250ms ease,
+    background-color 250ms ease,
+    border-color 250ms ease,
+    opacity 250ms ease;
+}
+
+.page button:not(:disabled):active {
+  transform: scale(0.985);
+}
+
+.page button:focus-visible {
+  outline: 2px solid var(--eclat-mint);
+  outline-offset: 4px;
+}
+
+.page button:disabled {
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   13 — SECTION MOTION
+============================================================ */
+
+@keyframes eclatReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes eclatGlow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.compareSpectrumSection,
+.audioLevelsSection,
+.advancedSpectralSection {
+  animation:
+    eclatReveal 650ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.similaritySection {
+  animation:
+    eclatReveal 650ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+/* ============================================================
+   14 — RESPONSIVE DESIGN
+============================================================ */
+
+@media (max-width: 900px) {
+  .compareSpectrumSection {
+    border-radius: 22px;
+  }
+
+  .similaritySection {
+    padding: 28px;
+  }
+
+  .audioLevelsSection,
+  .advancedSpectralSection {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 650px) {
+  .page h1 {
+    font-size: clamp(3.5rem, 14vw, 5.5rem);
+  }
+
+  .page h2 {
+    font-size: clamp(2.4rem, 9vw, 4rem);
+  }
+
+  .compareSpectrumSection {
+    border-radius: 18px;
+  }
+
+  .compareSpectrumHeading h3 {
+    font-size: 2.2rem;
+  }
+
+  .similaritySection {
+    padding: 22px;
+    border-radius: 19px;
+  }
+
+  .similarityScore {
+    font-size: clamp(3.4rem, 15vw, 5.5rem);
+  }
+
+  .audioLevelsSection,
+  .advancedSpectralSection {
+    padding: 19px;
+    border-radius: 18px;
+  }
+
+  .audioLevelsGrid,
+  .advancedSpectralGrid,
+  .advancedSpectralDifferenceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .audioLevelCard,
+  .advancedSpectralCard {
+    padding: 20px;
+  }
+}
+
+/* ============================================================
+   15 — REDUCED MOTION / ACCESSIBILITY
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .page,
+  .page *,
+  .page *::before,
+  .page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================
+   ÉCLAT — DISCOVERIES WORKSPACE
+   MODULE 11 · TABBED AUDIO ANALYSIS
+========================================== */
+
+/* TAB NAVIGATION */
+
+.discoveryTabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+
+  margin-top: 32px;
+  padding: 7px;
+
+  border: 1px solid rgba(244, 220, 232, 0.12);
+  border-radius: 18px;
+
+  background: rgba(10, 8, 13, 0.42);
+}
+
+.discoveryTab {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-width: 0;
+  min-height: 58px;
+  padding: 12px 10px;
+
+  border: 1px solid transparent;
+  border-radius: 12px;
+
+  background: transparent;
+  color: #ad9cac;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease,
+    transform 250ms ease;
+}
+
+.discoveryTab:hover {
+  color: #f6e6ee;
+  background: rgba(214, 160, 186, 0.07);
+}
+
+.discoveryTabActive {
+  color: #f9e9f2;
+
+  border-color: rgba(226, 168, 201, 0.3);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(226, 168, 201, 0.18),
+      rgba(226, 168, 201, 0.045)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 10px 28px rgba(0, 0, 0, 0.13);
+}
+
+.discoveryTabActive::after {
+  content: "";
+
+  position: absolute;
+  bottom: 5px;
+  left: 25%;
+  right: 25%;
+
+  height: 2px;
+  border-radius: 5px;
+
+  background: linear-gradient(
+    90deg,
+    #dba3c0,
+    #a7e3d1
+  );
+}
+
+.discoveryTabNumber {
+  color: #b98caa;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.discoveryTabActive .discoveryTabNumber {
+  color: #a7e3d1;
+}
+
+/* PANEL */
+
+.discoveryPanel {
+  min-height: 360px;
+  margin-top: 26px;
+
+  animation: eclatPanelIn 380ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes eclatPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* OVERVIEW */
+
+.discoveryOverview,
+.discoveryFrequency {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.discoveryIntro {
+  padding: 12px 0 10px;
+}
+
+.discoveryEyebrow {
+  display: block;
+
+  margin-bottom: 16px;
+
+  color: #d9a5c3;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.discoveryIntro h4 {
+  margin: 0;
+
+  color: #f6e9f0;
+
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 500;
+
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+}
+
+.discoveryIntro p {
+  max-width: 560px;
+  margin-top: 14px;
+
+  color: #b9a9b8;
+
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+/* OVERRIDE ORIGINAL SIMILARITY SPACING */
+
+.discoveryOverview .similaritySection {
+  margin-top: 0;
+}
+
+/* QUICK METRIC CARDS */
+
+.discoveryMetricGrid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.discoveryMetric {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+
+  min-width: 0;
+  padding: 24px;
+
+  border: 1px solid rgba(244, 220, 232, 0.12);
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      155deg,
+      rgba(226, 168, 201, 0.06),
+      rgba(255, 255, 255, 0.015)
+    );
+}
+
+.discoveryMetric span {
+  color: #bba6b8;
+
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  line-height: 1.6;
+}
+
+.discoveryMetric strong {
+  color: #f5deeb;
+
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+
+  overflow-wrap: anywhere;
+}
+
+.discoveryHint {
+  padding: 18px 22px;
+
+  border-left: 2px solid #a9decd;
+
+  background: rgba(169, 222, 205, 0.045);
+
+  color: #c3b6c4;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* MAKE NESTED PANELS FIT THE WORKSPACE */
+
+.discoveryPanel .audioLevelsSection,
+.discoveryPanel .advancedSpectralSection {
+  margin-top: 0;
+
+  border-radius: 20px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 750px) {
+  .discoveryMetricGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 580px) {
+  .discoveryTabs {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .discoveryTab {
+    min-height: 50px;
+    font-size: 12px;
+  }
+
+  .discoveryPanel {
+    min-height: 280px;
+  }
+
+  .discoveryMetricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .discoveryMetric {
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .discoveryIntro h4 {
+    font-size: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discoveryPanel {
+    animation: none;
+  }
+
+  .discoveryTab {
+    transition: none;
+  }
+}
+
+/* =================================================
+   ÉCLAT — DAYDREAM LABORATORY
+   Light-theme overrides
+================================================= */
+
+:global(html[data-theme="light"]) .page {
+  --eclat-bg: #fff8fa;
+  --eclat-surface: #ffffff;
+  --eclat-plum: #f3e8f6;
+
+  --eclat-pink: #9746d2;
+  --eclat-pink-soft: #6d329f;
+  --eclat-mint: #e9a47f;
+
+  --eclat-white: #29213c;
+  --eclat-muted: #786b81;
+
+  --eclat-border: rgba(100, 55, 135, 0.16);
+
+  --eclat-glow:
+    0 16px 45px rgba(104, 58, 147, 0.09);
+
+  color: #29213c;
+  background: #fff8fa;
+}
+
+:global(html[data-theme="light"]) .page::before {
+  background:
+    radial-gradient(
+      ellipse 50% 30% at 78% 10%,
+      rgba(219, 159, 244, 0.25),
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 35% 26% at 14% 30%,
+      rgba(255, 190, 146, 0.18),
+      transparent 78%
+    ),
+    linear-gradient(
+      180deg,
+      #fff9fc,
+      #f8f0fb 60%,
+      #fff9f4
+    );
+}
+
+:global(html[data-theme="light"]) .page::after {
+  opacity: 0.07;
+  background-image:
+    linear-gradient(#734a8518 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      #734a8518 1px,
+      transparent 1px
+    );
+}
+
+:global(html[data-theme="light"]) .page h1,
+:global(html[data-theme="light"]) .page h2,
+:global(html[data-theme="light"]) .page h3,
+:global(html[data-theme="light"]) .page h4 {
+  color: #29213c;
+}
+
+/* Shared glass surfaces become floating pastel cards */
+
+:global(html[data-theme="light"]) .spectrumCard,
+:global(html[data-theme="light"]) .compareSpectrumSection,
+:global(html[data-theme="light"]) .audioLevelsSection,
+:global(html[data-theme="light"]) .advancedSpectralSection {
+  border-color: rgba(100, 55, 135, 0.15);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(252, 243, 253, 0.97)
+    );
+
+  box-shadow:
+    0 22px 60px rgba(91, 54, 122, 0.09),
+    inset 0 1px 0 #ffffff;
+}
+
+/* Interactive waveform */
+
+:global(html[data-theme="light"]) .waveArt {
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(185, 111, 225, 0.12),
+      transparent 78%
+    ),
+    #f5eafa;
+
+  border-color: rgba(147, 68, 210, 0.20);
+}
+
+:global(html[data-theme="light"]) .waveArt span {
+  background: linear-gradient(
+    180deg,
+    #bf7fea,
+    #9447cd,
+    #6c35a4
+  );
+
+  box-shadow: 0 0 12px rgba(147, 68, 210, 0.12);
+}
+
+:global(html[data-theme="light"]) .waveformPlayhead {
+  background: #f19b67;
+  box-shadow: 0 0 14px #f19b6799;
+}
+
+:global(html[data-theme="light"]) .waveformTime {
+  color: #766a80;
+}
+
+/* Frequency visualizations */
+
+:global(html[data-theme="light"]) .spectrumHeader,
+:global(html[data-theme="light"]) .spectrumAxis,
+:global(html[data-theme="light"]) .compareSpectrumAxis {
+  color: #756881;
+}
+
+:global(html[data-theme="light"]) .spectrumBars,
+:global(html[data-theme="light"]) .compareSpectrumChart,
+:global(html[data-theme="light"]) .spectralDifferenceChart {
+  background: #f6eefa;
+}
+
+:global(html[data-theme="light"]) .spectrumBars > span,
+:global(html[data-theme="light"]) .compareSpectrumBarA,
+:global(html[data-theme="light"]) .spectralDifferenceChart > span {
+  background: linear-gradient(
+    180deg,
+    #c486ea,
+    #9345d1,
+    #6d329e
+  );
+}
+
+:global(html[data-theme="light"]) .compareSpectrumBarB {
+  background: linear-gradient(
+    180deg,
+    #ffc49b,
+    #ed936d,
+    #d36c6c
+  );
+}
+
+:global(html[data-theme="light"]) .spectrumPeak strong,
+:global(html[data-theme="light"]) .compareSpectrumStats strong,
+:global(html[data-theme="light"]) .spectralInsights strong {
+  color: #332542;
+}
+
+/* Tabbed discoveries workspace */
+
+:global(html[data-theme="light"]) .discoveryTabs {
+  background: #f5eafa;
+  border-color: rgba(147, 68, 210, 0.16);
+}
+
+:global(html[data-theme="light"]) .discoveryTab {
+  color: #72647d;
+}
+
+:global(html[data-theme="light"]) .discoveryTab:hover {
+  color: #9344d2;
+  background: #efe0f7;
+}
+
+:global(html[data-theme="light"]) .discoveryTabActive {
+  color: #502277;
+
+  border-color: rgba(147, 68, 210, 0.20);
+  background: white;
+
+  box-shadow:
+    0 5px 20px rgba(91, 54, 122, 0.09);
+}
+
+:global(html[data-theme="light"]) .discoveryTabNumber,
+:global(html[data-theme="light"]) .discoveryEyebrow {
+  color: #9344d2;
+}
+
+:global(html[data-theme="light"]) .discoveryTabActive::after {
+  background: linear-gradient(
+    90deg,
+    #9344d2,
+    #f1a47e
+  );
+}
+
+:global(html[data-theme="light"]) .discoveryIntro h4 {
+  color: #29213c;
+}
+
+:global(html[data-theme="light"]) .discoveryIntro p,
+:global(html[data-theme="light"]) .compareSpectrumDescription {
+  color: #756881;
+}
+
+:global(html[data-theme="light"]) .discoveryMetric {
+  background: #fffafd;
+  border-color: rgba(147, 68, 210, 0.14);
+}
+
+:global(html[data-theme="light"]) .discoveryMetric span {
+  color: #7c6a83;
+}
+
+:global(html[data-theme="light"]) .discoveryMetric strong {
+  color: #342344;
+}
+
+:global(html[data-theme="light"]) .discoveryHint {
+  color: #62536f;
+  background: #f1e6f8;
+  border-left-color: #9344d2;
+}
+
+/* Spectral similarity */
+
+:global(html[data-theme="light"]) .similaritySection {
+  background:
+    radial-gradient(
+      ellipse at 90% 0%,
+      rgba(242, 173, 145, 0.22),
+      transparent 60%
+    ),
+    #f5e8f8;
+
+  border-color: rgba(147, 68, 210, 0.18);
+
+  box-shadow:
+    0 14px 35px rgba(91, 54, 122, 0.08);
+}
+
+:global(html[data-theme="light"]) .similarityHeader,
+:global(html[data-theme="light"]) .similarityEyebrow {
+  color: #79548c;
+}
+
+:global(html[data-theme="light"]) .similarityScore {
+  color: #8436bf;
+  text-shadow: none;
+}
+
+:global(html[data-theme="light"]) .similarityLevel {
+  color: #7135a5;
+  background: #ffffffbb;
+  border-color: rgba(147, 68, 210, 0.20);
+}
+
+:global(html[data-theme="light"]) .similarityProgress {
+  background: #dfcee9;
+}
+
+:global(html[data-theme="light"]) .similarityProgressFill {
+  background: linear-gradient(
+    90deg,
+    #9042d1,
+    #d889cb,
+    #f3b38f
+  );
+}
+
+:global(html[data-theme="light"]) .similarityExplanation {
+  color: #473353;
+}
+
+:global(html[data-theme="light"]) .similarityDisclaimer {
+  color: #806d86;
+}
+
+/* RMS and advanced features */
+
+:global(html[data-theme="light"]) .audioLevelCard,
+:global(html[data-theme="light"]) .advancedSpectralCard {
+  background: white;
+  border-color: rgba(147, 68, 210, 0.14);
+}
+
+:global(html[data-theme="light"]) .audioLevelCard:hover,
+:global(html[data-theme="light"]) .advancedSpectralCard:hover {
+  background: #fffafd;
+  border-color: rgba(147, 68, 210, 0.3);
+}
+
+:global(html[data-theme="light"]) .audioLevelValue,
+:global(html[data-theme="light"]) .audioLevelDifferenceValue,
+:global(html[data-theme="light"]) .advancedSpectralMetric strong,
+:global(html[data-theme="light"]) .advancedSpectralDifferenceGrid strong {
+  color: #342344;
+}
+
+:global(html[data-theme="light"]) .audioLevelMeter {
+  background: #e9dceb;
+}
+
+:global(html[data-theme="light"]) .audioLevelMeterA {
+  background: linear-gradient(
+    90deg,
+    #8340c4,
+    #bd7ce6
+  );
+}
+
+:global(html[data-theme="light"]) .audioLevelMeterB {
+  background: linear-gradient(
+    90deg,
+    #e47e8e,
+    #f6b88c
+  );
+}
+
+:global(html[data-theme="light"]) .audioLevelDifference,
+:global(html[data-theme="light"]) .advancedSpectralSummary {
+  background: #f6edfa;
+  border-color: rgba(147, 68, 210, 0.15);
+}
+
+:global(html[data-theme="light"]) .audioLevelsHeader,
+:global(html[data-theme="light"]) .advancedSpectralHeader,
+:global(html[data-theme="light"]) .advancedSpectralTrackA {
+  color: #9344d2;
+}
+
+:global(html[data-theme="light"]) .advancedSpectralTrackB {
+  color: #d36d88;
+}
+
+:global(html[data-theme="light"]) .audioLevelsHeading p,
+:global(html[data-theme="light"]) .advancedSpectralHeading p,
+:global(html[data-theme="light"]) .audioLevelDetails,
+:global(html[data-theme="light"]) .audioLevelDifference p,
+:global(html[data-theme="light"]) .advancedSpectralMetric p,
+:global(html[data-theme="light"]) .advancedSpectralInterpretation,
+:global(html[data-theme="light"]) .advancedSpectralNote,
+:global(html[data-theme="light"]) .audioLevelNote,
+:global(html[data-theme="light"]) .compareSpectrumNote,
+:global(html[data-theme="light"]) .spectrumNote,
+:global(html[data-theme="light"]) .spectralInterpretation {
+  color: #776981;
+}
+
+/* ==========================================
+   ÉCLAT — LIGHT THEME TEXT CONTRAST FIX
+   Stronger readability, same pastel aesthetic
+========================================== */
+
+/* General secondary text */
+:global(html[data-theme="light"]) .page {
+  --eclat-muted: #65556f;
+}
+
+/* Hero subtitle */
+:global(html[data-theme="light"]) .page p {
+  color: #62556e;
+}
+
+/* Small uppercase section labels */
+:global(html[data-theme="light"]) .page [class*="eyebrow"],
+:global(html[data-theme="light"]) .page [class*="Eyebrow"] {
+  color: #8b477c;
+}
+
+/* Track labels, captions, and file descriptions */
+:global(html[data-theme="light"]) .page [class*="track"],
+:global(html[data-theme="light"]) .page [class*="Track"] {
+  color: #80617d;
+}
+
+/* Important: Keep prominent values dark */
+:global(html[data-theme="light"]) .page strong {
+  color: #30233d;
+}
+
+/* Spectrum labels and descriptions */
+:global(html[data-theme="light"]) .spectrumHeader,
+:global(html[data-theme="light"]) .spectrumAxis,
+:global(html[data-theme="light"]) .compareSpectrumAxis,
+:global(html[data-theme="light"]) .spectrumNote,
+:global(html[data-theme="light"]) .compareSpectrumNote {
+  color: #685873;
+}
+
+/* Analysis descriptions */
+:global(html[data-theme="light"]) .compareSpectrumDescription,
+:global(html[data-theme="light"]) .discoveryIntro p,
+:global(html[data-theme="light"]) .spectralInterpretation,
+:global(html[data-theme="light"]) .audioLevelNote,
+:global(html[data-theme="light"]) .advancedSpectralNote {
+  color: #62556e;
+}
+
+/* Audio upload card descriptions */
+:global(html[data-theme="light"]) .page [class*="file"],
+:global(html[data-theme="light"]) .page [class*="File"] {
+  color: #65556f;
+}
+
+/* Preserve accessibility and legibility */
+:global(html[data-theme="light"]) .page button:focus-visible {
+  outline-color: #8640bf;
+}
+
+/* ================================================
+   ÉCLAT — LIGHT THEME UPLOAD STUDIO
+   Soft floating cards + readable text
+================================================ */
+
+/* The two main upload cards */
+
+:global(html[data-theme="light"]) .page
+  [class*="audioCard"],
+:global(html[data-theme="light"]) .page
+  [class*="slotCard"],
+:global(html[data-theme="light"]) .page
+  [class*="trackCard"] {
+  background: #fffafd;
+  color: #30243f;
+
+  border: 1px solid rgba(132, 71, 171, 0.16);
+  border-radius: 24px;
+
+  box-shadow:
+    0 18px 45px rgba(101, 65, 127, 0.08),
+    0 3px 9px rgba(101, 65, 127, 0.035);
+
+  transition:
+    transform 250ms ease,
+    box-shadow 250ms ease,
+    border-color 250ms ease;
+}
+
+:global(html[data-theme="light"]) .page
+  [class*="audioCard"]:hover,
+:global(html[data-theme="light"]) .page
+  [class*="slotCard"]:hover,
+:global(html[data-theme="light"]) .page
+  [class*="trackCard"]:hover {
+  border-color: rgba(147, 68, 210, 0.35);
+
+  box-shadow:
+    0 24px 55px rgba(101, 65, 127, 0.12);
+
+  transform: translateY(-3px);
+}
+
+/* Text on the upload cards */
+
+:global(html[data-theme="light"]) .page
+  [class*="audioCard"] p,
+:global(html[data-theme="light"]) .page
+  [class*="slotCard"] p,
+:global(html[data-theme="light"]) .page
+  [class*="trackCard"] p {
+  color: #695973;
+}
+
+:global(html[data-theme="light"]) .page
+  [class*="audioCard"] span,
+:global(html[data-theme="light"]) .page
+  [class*="slotCard"] span,
+:global(html[data-theme="light"]) .page
+  [class*="trackCard"] span {
+  color: #795982;
+}
+
+/* Keep actual waveform bars colorful */
+
+:global(html[data-theme="light"]) .waveArt span {
+  color: inherit;
+  background: linear-gradient(
+    180deg,
+    #c887e7,
+    #954ace,
+    #7434aa
+  );
+}
+
+/* Upload labels and file selectors */
+
+:global(html[data-theme="light"]) .page
+  label[for],
+:global(html[data-theme="light"]) .page
+  label[class*="upload"] {
+  color: #7432b5;
+
+  border-color: rgba(147, 68, 210, 0.28);
+
+  background: rgba(147, 68, 210, 0.075);
+
+  transition:
+    background 200ms ease,
+    border-color 200ms ease;
+}
+
+:global(html[data-theme="light"]) .page
+  label[for]:hover,
+:global(html[data-theme="light"]) .page
+  label[class*="upload"]:hover {
+  background: rgba(147, 68, 210, 0.14);
+  border-color: #9344d2;
+}
+
+/* Better section labels */
+
+:global(html[data-theme="light"]) .page
+  [class*="sectionLabel"],
+:global(html[data-theme="light"]) .page
+  [class*="sectionMeta"] {
+  color: #80516f;
+}
+
+/* More legible disabled action */
+
+:global(html[data-theme="light"]) .page
+  button:disabled:not(.waveArt) {
+  background: #e5d4e9;
+  border-color: #d6bfe0;
+  color: #66516d;
+
+  opacity: 1;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Text and buttons are still usable on small screens */
+
+@media (max-width: 650px) {
+  :global(html[data-theme="light"]) .page
+    [class*="audioCard"],
+  :global(html[data-theme="light"]) .page
+    [class*="slotCard"],
+  :global(html[data-theme="light"]) .page
+    [class*="trackCard"] {
+    border-radius: 18px;
+  }
+}
+
+/* ==========================================
+   ÉCLAT — LIGHT MODE STATUS LABEL FIX
+========================================== */
+
+/* Acoustic Lab / V0.4 label */
+:global(html[data-theme="light"]) .page header {
+  color: #35243f;
+}
+
+:global(html[data-theme="light"]) .page header span,
+:global(html[data-theme="light"]) .page header p {
+  color: #65416f;
+  opacity: 1;
+}
+
+/* Preserve the green availability indicator */
+:global(html[data-theme="light"]) .page header [class*="dot"],
+:global(html[data-theme="light"]) .page header [class*="Dot"] {
+  background-color: #36a474;
+  opacity: 1;
+}
+
+/* ============================================
+   ÉCLAT — LIGHT THEME REFINEMENT
+   Real component selectors
+============================================ */
+
+/* HEADER STATUS */
+
+:global(html[data-theme="light"]) .headerRight {
+  color: #573c65;
+  opacity: 1;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+:global(html[data-theme="light"]) .statusDot {
+  background: #35a875;
+  box-shadow: 0 0 10px rgba(53, 168, 117, 0.22);
+  opacity: 1;
+}
+
+/* EXPERIMENT SECTION LABELS */
+
+:global(html[data-theme="light"]) .sectionHeading {
+  color: #79567d;
+  border-color: rgba(105, 65, 120, 0.25);
+}
+
+:global(html[data-theme="light"]) .sectionHeading span {
+  color: #79567d;
+  opacity: 1;
+}
+
+/* UPLOAD CARDS */
+
+:global(html[data-theme="light"]) .audioSlot {
+  background: #fffafd;
+  color: #30243f;
+
+  border: 1px solid rgba(132, 71, 171, 0.18);
+  border-radius: 24px;
+
+  box-shadow:
+    0 18px 45px rgba(101, 65, 127, 0.08),
+    0 3px 9px rgba(101, 65, 127, 0.035);
+
+  transition:
+    transform 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+:global(html[data-theme="light"]) .audioSlot:hover {
+  border-color: rgba(147, 68, 210, 0.32);
+
+  box-shadow:
+    0 22px 50px rgba(101, 65, 127, 0.12);
+
+  transform: translateY(-2px);
+}
+
+/* TRACK HEADER */
+
+:global(html[data-theme="light"]) .slotNumber {
+  color: #9145c8;
+}
+
+:global(html[data-theme="light"]) .slotLabel {
+  color: #62516e;
+  opacity: 1;
+}
+
+/* EMPTY STATE */
+
+:global(html[data-theme="light"]) .emptyText {
+  color: #695876;
+  opacity: 1;
+}
+
+/* SELECTED FILE INFORMATION */
+
+:global(html[data-theme="light"]) .selectedFile {
+  color: #44344e;
+}
+
+:global(html[data-theme="light"]) .selectedFile strong {
+  color: #342540;
+}
+
+:global(html[data-theme="light"]) .selectedFile span {
+  color: #766680;
+}
+
+/* FILE UPLOAD BUTTON */
+
+:global(html[data-theme="light"]) .fileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #9145d0;
+  color: #ffffff;
+
+  border: 1px solid #9145d0;
+  border-radius: 12px;
+
+  padding: 13px 18px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 22px rgba(145, 69, 208, 0.14);
+
+  transition:
+    background 200ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+:global(html[data-theme="light"]) .fileButton:hover {
+  background: #7833b2;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+:global(html[data-theme="light"]) .fileButton:focus-within {
+  outline: 2px solid #9145d0;
+  outline-offset: 3px;
+}
+
+/* ANALYZE BUTTON */
+
+:global(html[data-theme="light"]) .analyzeButton:not(:disabled) {
+  background: linear-gradient(
+    110deg,
+    #9145d0,
+    #b96cda
+  );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 12px 30px rgba(145, 69, 208, 0.18);
+}
+
+:global(html[data-theme="light"]) .analyzeButton:not(:disabled):hover {
+  background: linear-gradient(
+    110deg,
+    #7833b2,
+    #a653ca
+  );
+
+  transform: translateY(-2px);
+}
+
+:global(html[data-theme="light"]) .analyzeButton:disabled {
+  background: #eaddec;
+  color: #685675;
+  border: 1px solid #d9c5e1;
+  opacity: 1;
+  box-shadow: none;
+}
+
+/* HERO DESCRIPTION */
+
+:global(html[data-theme="light"]) .heroDescription {
+  color: #62516d;
+  opacity: 1;
+}
+
+/* PRIVACY NOTE */
+
+:global(html[data-theme="light"]) .privacyNote {
+  color: #6d5b77;
+  opacity: 1;
+}
+
+/* FOOTER */
+
+:global(html[data-theme="light"]) .footer {
+  color: #766681;
+  border-color: rgba(105, 65, 120, 0.18);
+}
+
+:global(html[data-theme="light"]) .footer span {
+  color: #766681;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 650px) {
+  :global(html[data-theme="light"]) .audioSlot {
+    border-radius: 18px;
+  }
+
+  :global(html[data-theme="light"]) .fileButton {
+    padding: 12px 15px;
+  }
+}
+:global(html[data-theme="light"]) .fileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #a855f7, #8b5cf6);
+  color: #ffffff !important;
+
+  border: 1px solid #9f67ea;
+  border-radius: 16px;
+
+  padding: 14px 22px;
+  min-height: 54px;
+
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(139, 92, 246, 0.18);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+:global(html[data-theme="light"]) .fileButton:hover {
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
+  color: #ffffff !important;
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(139, 92, 246, 0.24);
+}
+
+:global(html[data-theme="light"]) .fileButton:focus-within {
+  outline: 3px solid rgba(168, 85, 247, 0.22);
+  outline-offset: 3px;
+}
+
+:global(html[data-theme="light"]) .fileButton input {
+  display: none;
+}
+:global(html[data-theme="light"]) .emptyText {
+  color: #5f5470 !important;
+  opacity: 1;
+}
+
+:global(html[data-theme="light"]) .slotLabel {
+  color: #6a5b78 !important;
+  opacity: 1;
+}
+
+:global(html[data-theme="light"]) .slotNumber {
+  color: #9145d0 !important;
+}
+
+/* ==================================================
+   ÉCLAT — LIGHT THEME ACOUSTIC RESULTS
+   Clean pastel cards + improved readability
+================================================== */
+
+/* Main results heading */
+
+:global(html[data-theme="light"]) .results {
+  color: #30243f;
+}
+
+:global(html[data-theme="light"]) .results h2 {
+  color: #30243f;
+}
+
+:global(html[data-theme="light"]) .resultIntro {
+  color: #65566f;
+}
+
+/* =====================================
+   TRACK SUMMARY CARDS
+===================================== */
+
+:global(html[data-theme="light"]) .summaryGrid > div {
+  background: #fffafd;
+  color: #30243f;
+
+  border: 1px solid rgba(145, 69, 208, 0.16);
+  border-radius: 18px;
+
+  box-shadow:
+    0 12px 35px rgba(103, 63, 132, 0.06);
+
+  padding: 24px;
+}
+
+:global(html[data-theme="light"]) .summaryGrid > div > span {
+  color: #8956a4;
+  opacity: 1;
+}
+
+:global(html[data-theme="light"]) .summaryGrid > div > strong {
+  display: block;
+
+  color: #332443;
+  opacity: 1;
+
+  font-weight: 600;
+}
+
+:global(html[data-theme="light"]) .summaryGrid > div > small {
+  color: #766680;
+  opacity: 1;
+}
+
+/* =====================================
+   METRIC COMPARISON PANEL
+===================================== */
+
+:global(html[data-theme="light"]) .metricList {
+  background: #fffafd;
+
+  border: 1px solid rgba(145, 69, 208, 0.16);
+  border-radius: 20px;
+
+  box-shadow:
+    0 12px 40px rgba(103, 63, 132, 0.055);
+}
+
+:global(html[data-theme="light"]) .metric {
+  border-color: rgba(103, 63, 132, 0.13);
+}
+
+:global(html[data-theme="light"]) .metricHeader h3 {
+  color: #332443;
+}
+
+:global(html[data-theme="light"]) .metricHeader span {
+  color: #766680;
+}
+
+:global(html[data-theme="light"]) .barRow > span {
+  color: #6c5376;
+}
+
+:global(html[data-theme="light"]) .barRow > strong {
+  color: #392c47;
+  font-weight: 600;
+}
+
+/* Neutral bar backgrounds */
+
+:global(html[data-theme="light"]) .barTrack {
+  background: #e9dcec;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* Track A — Purple/Pink */
+
+:global(html[data-theme="light"]) .barA {
+  background: linear-gradient(
+    90deg,
+    #a85cce,
+    #d99acb
+  );
+}
+
+/* Track B — Teal */
+
+:global(html[data-theme="light"]) .barB {
+  background: linear-gradient(
+    90deg,
+    #4da99e,
+    #87ccc2
+  );
+}
+
+/* =====================================
+   ADDITIONAL METRICS
+===================================== */
+
+:global(html[data-theme="light"]) .extraMetrics > div {
+  background: #fffafd;
+
+  border: 1px solid rgba(145, 69, 208, 0.16);
+  border-radius: 18px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 12px 35px rgba(103, 63, 132, 0.06);
+}
+
+:global(html[data-theme="light"]) .extraMetrics > div > span {
+  color: #785a85;
+  opacity: 1;
+}
+
+:global(html[data-theme="light"]) .extraMetrics > div > strong {
+  color: #422e55;
+  font-weight: 500;
+  opacity: 1;
+}
+
+/* =====================================
+   DISCLAIMER
+===================================== */
+
+:global(html[data-theme="light"]) .disclaimer {
+  color: #6d5c77;
+  border-color: rgba(145, 69, 208, 0.16);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 650px) {
+  :global(html[data-theme="light"]) .summaryGrid,
+  :global(html[data-theme="light"]) .extraMetrics {
+    grid-template-columns: 1fr;
+  }
+
+  :global(html[data-theme="light"]) .summaryGrid > div,
+  :global(html[data-theme="light"]) .extraMetrics > div {
+    padding: 20px;
+  }
+}
+
+/* =====================================================
+   ÉCLAT · MODULE 12
+   CONSOLIDATED ACOUSTIC DISCOVERIES
+
+   Applies to both dark and light themes.
+===================================================== */
+
+/* =====================================
+   RESULTS WORKSPACE
+===================================== */
+
+.results {
+  scroll-margin-top: 32px;
+}
+
+/* The Discoveries workspace is now
+   the primary results container. */
+
+.results > .compareSpectrumSection {
+  margin-top: 24px;
+}
+
+/* =====================================
+   TAB PANEL VISIBILITY
+===================================== */
+
+/* Explicitly preserve hidden-tab behavior
+   even when other layout rules use display. */
+
+.discoveryPanel[hidden] {
+  display: none !important;
+}
+
+/* =====================================
+   OVERVIEW LAYOUT
+===================================== */
+
+.discoveryOverview {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+/* Avoid unnecessary empty space. */
+
+.discoveryOverview .similaritySection {
+  margin-top: 0;
+}
+
+.discoveryOverview .discoveryMetricGrid {
+  margin-top: 0;
+}
+
+/* =====================================
+   COLLAPSIBLE PYTHON REPORT
+===================================== */
+
+.backendReportDisclosure {
+  overflow: hidden;
+
+  margin-top: 8px;
+
+  border: 1px solid rgba(226, 168, 201, 0.2);
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      140deg,
+      rgba(226, 168, 201, 0.075),
+      rgba(166, 228, 209, 0.025)
+    );
+
+  transition:
+    border-color 250ms ease,
+    background 250ms ease;
+}
+
+.backendReportDisclosure[open] {
+  border-color: rgba(226, 168, 201, 0.32);
+}
+
+/* =====================================
+   EXPAND / COLLAPSE BUTTON
+===================================== */
+
+.backendReportToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+
+  padding: 26px 30px;
+
+  color: #f4e3ed;
+
+  cursor: pointer;
+  list-style: none;
+
+  transition: background 200ms ease;
+}
+
+.backendReportToggle::-webkit-details-marker {
+  display: none;
+}
+
+.backendReportToggle::marker {
+  content: "";
+}
+
+.backendReportToggle:hover {
+  background: rgba(226, 168, 201, 0.065);
+}
+
+.backendReportToggle:focus-visible {
+  outline: 2px solid #a6e4d1;
+  outline-offset: -4px;
+}
+
+.backendReportToggle > span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.backendReportToggle .discoveryEyebrow {
+  margin-bottom: 0;
+}
+
+.backendReportToggle strong {
+  display: block;
+
+  color: #f4e3ed;
+
+  font-size: clamp(17px, 2.3vw, 23px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+
+  line-height: 1.35;
+}
+
+.backendReportToggle small {
+  display: block;
+
+  color: #b8a7b7;
+
+  font-size: 12px;
+  font-weight: 400;
+
+  line-height: 1.7;
+}
+
+/* =====================================
+   EXPAND / COLLAPSE ICON
+===================================== */
+
+.backendReportToggleIcon {
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  width: 46px;
+  height: 46px;
+
+  border: 1px solid rgba(226, 168, 201, 0.3);
+  border-radius: 50%;
+
+  color: #f1bfdb;
+  background: rgba(226, 168, 201, 0.085);
+
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1;
+
+  transition:
+    transform 250ms ease,
+    background 250ms ease;
+}
+
+.backendReportDisclosure[open]
+  .backendReportToggleIcon {
+  transform: rotate(45deg);
+
+  background: rgba(226, 168, 201, 0.16);
+}
+
+/* =====================================
+   EXPANDED REPORT CONTENT
+===================================== */
+
+.backendReportContent {
+  padding: 0 30px 30px;
+
+  animation: eclatReportReveal 300ms ease;
+}
+
+@keyframes eclatReportReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================
+   PYTHON REPORT
+===================================== */
+
+.backendReport {
+  padding-top: 30px;
+
+  border-top: 1px solid rgba(226, 168, 201, 0.17);
+}
+
+.backendReportHeading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.backendReportHeading h4 {
+  margin: 10px 0 0;
+
+  color: #f4e4ee;
+
+  font-size: clamp(25px, 3vw, 38px);
+  font-weight: 500;
+
+  letter-spacing: -0.055em;
+  line-height: 1.1;
+}
+
+.backendReportHeading > p {
+  max-width: 270px;
+
+  color: #b8a6b6;
+
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.backendReport .summaryGrid {
+  margin-top: 0;
+}
+
+.backendReport .summaryGrid strong {
+  overflow-wrap: anywhere;
+}
+
+.backendReport .metricList {
+  margin-top: 22px;
+}
+
+.backendReport .extraMetrics {
+  margin-top: 22px;
+}
+
+.backendReportNote {
+  margin-top: 24px;
+
+  color: #ac9bab;
+
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* =====================================
+   LIGHT THEME
+===================================== */
+
+:global(html[data-theme="light"])
+  .backendReportDisclosure {
+  background:
+    linear-gradient(
+      140deg,
+      #ffffff,
+      #f8edfb
+    );
+
+  border-color: rgba(145, 69, 208, 0.17);
+
+  box-shadow:
+    0 14px 40px rgba(95, 57, 128, 0.055);
+}
+
+:global(html[data-theme="light"])
+  .backendReportDisclosure[open] {
+  border-color: rgba(145, 69, 208, 0.3);
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggle {
+  color: #332443;
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggle:hover {
+  background: rgba(145, 69, 208, 0.055);
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggle:focus-visible {
+  outline-color: #9145d0;
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggle strong {
+  color: #332443;
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggle small {
+  color: #6f5b78;
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggle .discoveryEyebrow {
+  color: #8b45bf;
+}
+
+:global(html[data-theme="light"])
+  .backendReportToggleIcon {
+  color: #9145d0;
+
+  background: #f0e2f7;
+
+  border-color: rgba(145, 69, 208, 0.22);
+}
+
+:global(html[data-theme="light"])
+  .backendReportDisclosure[open]
+  .backendReportToggleIcon {
+  background: #e9d3f4;
+}
+
+:global(html[data-theme="light"])
+  .backendReport {
+  border-top-color: rgba(145, 69, 208, 0.16);
+}
+
+:global(html[data-theme="light"])
+  .backendReportHeading h4 {
+  color: #332443;
+}
+
+:global(html[data-theme="light"])
+  .backendReportHeading > p {
+  color: #66566f;
+}
+
+:global(html[data-theme="light"])
+  .backendReportNote {
+  color: #66566f;
+}
+
+/* Ensure legacy dark card styles do not
+   reappear inside the expanded report. */
+
+:global(html[data-theme="light"])
+  .backendReport .summaryGrid > div,
+:global(html[data-theme="light"])
+  .backendReport .extraMetrics > div {
+  background: #fffafd;
+
+  color: #332443;
+
+  border: 1px solid rgba(145, 69, 208, 0.15);
+}
+
+:global(html[data-theme="light"])
+  .backendReport .summaryGrid strong,
+:global(html[data-theme="light"])
+  .backendReport .extraMetrics strong {
+  color: #332443;
+}
+
+:global(html[data-theme="light"])
+  .backendReport .metricList {
+  background: #fffafd;
+  border-color: rgba(145, 69, 208, 0.15);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 750px) {
+  .backendReportHeading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .backendReportToggle {
+    padding: 22px;
+  }
+
+  .backendReportContent {
+    padding: 0 22px 24px;
+  }
+}
+
+@media (max-width: 580px) {
+  .backendReportDisclosure {
+    border-radius: 17px;
+  }
+
+  .backendReportToggle {
+    padding: 19px;
+    gap: 12px;
+  }
+
+  .backendReportToggleIcon {
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+  }
+
+  .backendReportContent {
+    padding: 0 16px 20px;
+  }
+
+  .backendReportHeading h4 {
+    font-size: 28px;
+  }
+
+  .backendReport .summaryGrid,
+  .backendReport .extraMetrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================
+   REDUCED MOTION
+===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .backendReportContent {
+    animation: none;
+  }
+
+  .backendReportToggleIcon,
+  .backendReportDisclosure,
+  .backendReportToggle {
+    transition: none;
+  }
+}
